@@ -1,0 +1,9 @@
+industry: construction
+
+sources:
+  - id: rzs-g20263002
+    name: "RZS – Publikacija G20263002"
+    url: https://publikacije.stat.gov.rs/G2026/PdfE/G20263002.pdf
+    strategy: single_url
+    usages:
+      - {section: market_analysis}

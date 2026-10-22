@@ -1,0 +1,64 @@
+[project]
+name = "lambda-scraper"
+version = "0.1.0"
+description = "Scraper Lambda - fetches data from public sources on EventBridge schedule"
+requires-python = ">=3.11"
+
+dependencies = [
+    "boto3>=1.35.0",
+    "httpx>=0.28.0",
+    "beautifulsoup4>=4.12.0",
+    "lxml>=5.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+# Headless browser for JavaScript-rendered sources (fetch_mode: browser).
+# After installing: `uv run playwright install chromium`
+browser = [
+    "playwright>=1.45.0",
+]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/**/*.py",
+]
+
+[tool.hatch.build]
+include = [
+    "src/**/*.py",
+]
+
+[tool.uv]
+# Playwright is here too so `uv run` keeps it for local testing of fetch_mode: browser
+# sources (it removes optional extras otherwise). Not part of the Lambda package.
+dev-dependencies = [
+    "playwright>=1.45.0",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.8.0",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

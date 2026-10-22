@@ -1,0 +1,196 @@
+industry: electricity
+# NACE categories of clients in this industry (same as frontend/src/lib/industries.ts)
+nace_codes: ["D35.10", "D35.11", "D35.12", "D35.13", "D35.14", "D35.15", "D35.16", "D35.40"]
+
+sources:
+  - id: complyorclose-reports
+    name: "Comply or Close – izveštaji o zagađenju vazduha"
+    url: https://www.complyorclose.org/
+    strategy: crawl
+    params:
+      steps:
+        - link_selector: "a[href$='.pdf']"
+          latest: 1
+    usages:
+      - {section: market_analysis}
+
+  - id: aers-annual-report-2022
+    name: "AERS – Godišnji izveštaj Agencije 2022"
+    url: https://www.aers.rs/media/Files/Izvestaji/Godisnji/Izvestaj%20Agencije%202022.pdf
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: aers-annual-report-2024
+    name: "AERS – Godišnji izveštaj Agencije 2024"
+    url: https://www.aers.rs/media/Files/Izvestaji/Godisnji/Izvestaj%20Agencije%202024.pdf
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: aers-annual-report-2025
+    name: "AERS – Godišnji izveštaj Agencije 2025"
+    url: https://www.aers.rs/media/Files/Izvestaji/Godisnji/Izvestaj%20Agencije%202025.pdf
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: balkangreen-resavica-coal-mines
+    name: "Balkan Green Energy News – Resavica rudnici i subvencije"
+    url: https://balkangreenenergynews.com/resavica-coal-mines-never-break-even-despite-massive-subsidies/
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: eps-coal-mines
+    name: "EPS – Kopovi (rudarski baseni)"
+    url: https://www.eps.rs/eng/Poslovanje-ugalj/Pages/Kopovi.aspx
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: eps-technical-reports
+    name: "EPS – Tehnički izveštaji (godišnjaci)"
+    url: https://www.eps.rs/lat/Stranice/tehnicki-izvestaji.aspx
+    strategy: crawl
+    params:
+      steps:
+        - link_selector: "a[href$='.pdf']"
+          title_filter: ["Godisnjak"]
+          latest: 2
+    usages:
+      - {section: market_analysis}
+
+  - id: bankwatch-kostolac-b3
+    name: "Bankwatch – Kostolac lignite power plant"
+    url: https://bankwatch.org/project/kostolac-lignite-power-plant-serbia
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: bankwatch-money-flows-rivers-dry
+    name: "Bankwatch – Money flows, rivers dry"
+    url: https://bankwatch.org/blog/money-flows-rivers-dry
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: bankwatch-renewables-incentives-2023
+    name: "Bankwatch – Sustainable renewables incentives Western Balkans (2023)"
+    url: https://bankwatch.org/wp-content/uploads/2023/06/2023_06_29_Sustainable-renewables-incentives_how-are-the-Western-Balkans-doing.pdf
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: riverwatch-studenica-unesco
+    name: "RiverWatch – Studenica i UNESCO upozorenje"
+    url: https://riverwatch.eu/en/balkanrivers/news/citizens-ngos-warn-unesco-about-studenica-river-hydropower-threat
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: balkangreen-kostolac-b3-commissioning
+    name: "Balkan Green Energy News – Kostolac B3 (350 MW) puštanje u rad"
+    url: https://balkangreenenergynews.com/serbias-eps-commissions-kostolac-b3-coal-plant-of-350-mw/
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: bankwatch-kolubara-b
+    name: "Bankwatch – Kolubara B projekat"
+    url: https://bankwatch.org/project/kolubara-b-lignite-fired-power-plant-serbia
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: bankwatch-spatial-plan-coal
+    name: "Bankwatch – Nacrt prostornog plana / NECP rizici"
+    url: https://bankwatch.org/blog/serbia-key-national-plan-risks-cementing-coal-dependence
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: balkanist-coal-dependence
+    name: "Balkanist – Srpska zavisnost od uglja (poplave Kolubare 2014)"
+    url: http://balkanist.net/serbias-coal-dependence-hold-water/
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: balkanmagazin-kostolac-b3
+    name: "Balkanmagazin – Blok B3 Kostolac / poplave Drmno 2014"
+    url: http://www.balkanmagazin.net/struja/cid189-100744/izgradnja-bloka-b3-u-kostolcu-ceka-zeleno-svetlo-iz-kine
+    strategy: single_url
+    status: not_found
+    notes: "Stranica ne postoji"
+    usages:
+      - {section: market_analysis}
+
+  - id: energy-community-res-share-2020
+    name: "Energy Community – RES udeo 26,3% (2020)"
+    url: https://www.energy-community.org/news/Energy-Community-News/2022/02/16.html
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  # The databrowser link from the analysis is a JavaScript app; Eurostat's CSV export
+  # returns the same dataset (Serbia and EU27, from 2014) as a plain file; only the rows
+  # of the analysis period are stored (preset csv.period_column).
+  # Codes: EI_GDP_* = energy intensity of GDP (PPS / chain-linked volumes),
+  # KGOE_TEUR = kg of oil equivalent per thousand euro.
+  - id: eurostat-energy-intensity
+    name: "Eurostat – Energetski intenzitet (nrg_ind_ei), Srbija vs EU27"
+    url: "https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/nrg_ind_ei/A...RS+EU27_2020?format=SDMX-CSV&startPeriod=2014"
+    preset: eurostat_csv
+    usages:
+      - {section: market_analysis}
+
+  - id: energy-community-2030-targets
+    name: "Energy Community Ministerial Council – Klimatsko-energetski ciljevi 2030"
+    url: https://www.energy-community.org/dam/jcr:421f0dca-1b16-4bb5-af86-067bc35fe073/Decision_02-2022-MC_CEP_2030targets_15122022.pdf
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: energy-community-serbia-draft-inecp-2023
+    name: "Energy Community – Serbia draft INECP (jun 2023)"
+    url: https://www.energy-community.org/dam/jcr:01992fc5-4981-4ee3-84f8-f1f96830b4ba/INECP_Serbia_ENG_13.06.23%20.pdf
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: mre-necp-2030
+    name: "Ministarstvo rudarstva i energetike – Integrisani NECP do 2030 (vizija 2050)"
+    url: https://www.mre.gov.rs/tekst/sr/1115/-integrisani-nacionalni-energetski-i-klimatski-plan-republike-srbije-za-period-do-2030-sa-vizijom-do-2050-godine.php
+    strategy: single_url
+    params:
+      # The page links 12 PDFs (modelling inputs, rulebooks, consultations);
+      # only the consolidated plan in English is needed
+      follow_doc_links:
+        pattern: "INEKP_.*_ENG\\.pdf$"
+        max: 1
+    usages:
+      - {section: market_analysis}
+
+  - id: bankwatch-draft-necp-analysis
+    name: "Bankwatch – Analiza nacrta NECP Srbije"
+    url: https://bankwatch.org/blog/serbia-s-draft-necp-what-is-the-actual-plan
+    strategy: single_url
+    notes: "U analizi označeno kao Direct document, ali je HTML članak"
+    usages:
+      - {section: market_analysis}
+
+  - id: bankwatch-energy-sector-serbia
+    name: "Bankwatch – The energy sector in Serbia (glavni izvor)"
+    url: https://bankwatch.org/beyond-fossil-fuels/the-energy-sector-in-serbia
+    strategy: single_url
+    notes: "U analizi označeno kao Direct document, ali je HTML članak"
+    usages:
+      - {section: market_analysis}
+
+  - id: eurostat-electricity-price-statistics
+    name: "Eurostat – Electricity price statistics"
+    url: https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Electricity_price_statistics
+    strategy: single_url
+    usages:
+      - {section: price_analysis}

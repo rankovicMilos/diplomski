@@ -1,0 +1,27 @@
+industry: plastic_packaging
+
+sources:
+  - id: towardspackaging-plastic-packaging-market
+    name: "Towards Packaging – Plastic Packaging Market Insights"
+    url: https://www.towardspackaging.com/insights/plastic-packaging-market
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: plasticportal-price-reports
+    name: "Plastic Portal – Price Reports"
+    url: https://www.plasticportal.eu/en/cenove-reporty?year=2024&week=28
+    strategy: crawl
+    status: blocked
+    notes: "Cloudflare zaštita (403)"
+    usages:
+      - {section: price_analysis}
+
+  - id: nasdaq-crude-oil
+    name: "Nasdaq – Crude Oil (CL:NMX)"
+    url: https://www.nasdaq.com/market-activity/commodities/cl%3Anmx
+    strategy: live
+    status: blocked
+    notes: "React stranica; interni API odbija zahteve za robe, a uslovi korišćenja zabranjuju scraping"
+    usages:
+      - {section: price_analysis}

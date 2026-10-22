@@ -1,0 +1,30 @@
+industry: steel
+
+sources:
+  - id: worldsteel-statistical-yearbook
+    name: "World Steel Association – Steel Statistical Yearbook"
+    url: https://worldsteel.org/wp-content/uploads/Steel-Statistical-Yearbook-2023.pdf
+    strategy: single_url
+    status: not_found
+    notes: "Vraća 404"
+    usages:
+      - {section: market_analysis}
+
+  - id: oecd-steel-outlook-2025
+    name: "OECD – Steel Outlook 2025"
+    url: https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/05/oecd-steel-outlook-2025_bf2b6109/28b61a5e-en.pdf
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+      - {section: price_analysis}
+
+  - id: tradingeconomics-steel-rebar
+    name: "Trading Economics – Steel Rebar (CNY/T)"
+    url: https://tradingeconomics.com/commodity/steel
+    strategy: live
+    schedule: daily
+    params:
+      provider: meta_description
+      instrument: "Steel Rebar"
+    usages:
+      - {section: price_analysis}

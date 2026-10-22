@@ -1,0 +1,34 @@
+[project]
+name = "sra-thesis-trigger-upload-lambda"
+version = "0.1.0"
+description = "Lambda function for generating S3 presigned URLs for file uploads"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.2.0",
+    "pyyaml>=6.0.1",
+    "openpyxl>=3.1.0",
+    "xlrd>=2.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "boto3>=1.34.0",
+    "moto[s3]>=5.1.18",
+]
+
+[dependency-groups]
+# boto3 ships with the Lambda runtime; locally it is still imported by s3_service
+local = [
+    "boto3>=1.34.0",
+    "fastapi>=0.115.0",
+    "httpx>=0.27.0",
+    "uvicorn>=0.30.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]

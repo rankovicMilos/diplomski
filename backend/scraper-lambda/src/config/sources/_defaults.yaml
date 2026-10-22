@@ -1,0 +1,79 @@
+# Settings shared by every source. A source can override any of them.
+#
+# Source fields (in the industry files):
+#   id           unique id, used in storage keys and Lambda events         (required)
+#   name         human-readable name
+#   url          entry URL                                                  (required)
+#   strategy     single_url | crawl | live                                  (required)
+#                data exports (RZS, Eurostat CSV) are single_url sources
+#   fetch_mode   http (default) | browser (JavaScript-rendered pages, needs Playwright)
+#   status       active (default) | legacy | blocked | paywall | not_found | needs_clarification
+#   schedule     realtime | hourly | daily | weekly | monthly (default) | quarterly | yearly
+#                one stored snapshot per period; realtime keeps every run (exchange quotes)
+#   params       strategy-specific settings, see the scraper class docstrings
+#                refresh: true  new copy every schedule period (revised data)
+#                csv: {...}     CSV downloads become markdown tables (core/csv_table.py)
+#
+# Analysis period: the last two completed years (ANALYSIS_YEARS_BACK, core/period.py).
+# CSV tables keep only rows from it (csv.period_column) and crawled listings drop
+# documents from earlier years (steps[].min_year: null keeps them).
+#   preset       name of a block under `presets` below to start from
+#   fetch        overrides for the options below
+#   usages       where the source is used in the report:
+#                  - {section: market_analysis}
+#                industry defaults to the file's `industry`
+#   notes        free text; shown when the source is skipped
+#
+# Report sections used: market_analysis, price_analysis, industry_analysis, market_position
+
+schedule: monthly
+fetch_mode: http
+
+fetch:
+  timeout: 60
+  verify_ssl: true
+  retries: 2
+  delay_seconds: 0.5
+
+# Shared settings for groups of sources. A source's own values win; nested blocks
+# (params.csv) are merged key by key, so a source can add e.g. a row_filter.
+presets:
+  # RZS dissemination database CSV export:
+  #   https://data.stat.gov.rs/Home/DisplayResult?languageCode=en-US&displayMode=exportCSV&subAreaId=<ID>
+  rzs_csv:
+    strategy: single_url
+    schedule: monthly
+    params:
+      refresh: true
+      csv:
+        # ID* = codes, *Status* = data/confidentiality flags, God+Mes = period code
+        drop_columns: "^ID|Status|^God\\+Mes$"
+        period_column: Period
+        rename_columns:
+          Indikator: Indicator
+          nTer: Territory
+          nVrTacka: Period
+          Vrednost: Value
+          nJedinicaMere: Unit
+          nKD08: Activity (KD 2008)
+          nProizvod: Product
+          nPoljProizvod: Product
+          nVrPod: Measure
+          nNSST: Product (SITC)
+          nDrzave: Country
+
+  # Eurostat SDMX-CSV export:
+  #   https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/<dataset>/<key>?format=SDMX-CSV
+  eurostat_csv:
+    strategy: single_url
+    schedule: monthly
+    params:
+      refresh: true
+      year: null      # numbers in the key (e.g. EU27_2020) are not edition years
+      csv:
+        drop_columns: "^DATAFLOW$|^OBS_FLAG$|^CONF_STATUS$"
+        period_column: Period
+        rename_columns:
+          TIME_PERIOD: Period
+          OBS_VALUE: Value
+          LAST UPDATE: Last update

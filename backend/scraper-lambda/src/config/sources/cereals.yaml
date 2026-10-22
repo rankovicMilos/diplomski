@@ -1,0 +1,127 @@
+industry: cereals
+# NACE categories of clients in this industry (same as frontend/src/lib/industries.ts)
+nace_codes: ["A1.11"]
+
+# The PoC scrapers in services/scraping/sources/ are migrated to this config (minpolj,
+# nscomex, eurostat). The remaining sources from the analysis only link to home pages, so it
+# is unclear which data to collect (status: needs_clarification).
+
+sources:
+  - id: minpolj-cereals-market-reports
+    name: "Ministarstvo poljoprivrede – Izveštaji sa tržišta (žitarice)"
+    url: https://www.minpolj.gov.rs/izvestaji-sa-trzista/
+    strategy: crawl
+    notes: "Zamenjuje MarketReportsScraper"
+    fetch:
+      verify_ssl: false
+    params:
+      steps:
+        - item_selector: "div.well"
+          title_selector: "h3.media-heading a"
+          link_selector: "a.wpdm-download-link"
+          link_attr: data-downloadurl
+          match_usages: true
+          latest: 4
+    usages:
+      - {section: price_analysis, topic: corn, keyword: "кукуруз"}
+      - {section: price_analysis, topic: wheat, keyword: "пшениц"}
+      - {section: price_analysis, topic: sunflower, keyword: "сунцокрет"}
+      - {section: price_analysis, topic: soybean, keyword: "сој"}
+
+  - id: nscomex-weekly-reports
+    name: "Produktna berza Novi Sad – nedeljni izveštaj"
+    url: https://nscomex.com/podaci-iz-trgovanja/nedeljni-izvestaj/
+    strategy: single_url
+    notes: "Zamenjuje ExchangeReportsScraper; izveštaji su članci na samoj stranici"
+    params:
+      content_selector: "#main"
+    usages:
+      - {section: price_analysis}
+
+  - id: zitasrbije-reports
+    name: "Žita Srbije – mesečni izveštaji"
+    url: https://www.zitasrbije.rs/tekst.php?grupaA=13
+    strategy: crawl
+    status: not_found
+    notes: "Poslednji mesečni izveštaj je iz septembra 2021, van perioda analize"
+    usages:
+      - {section: market_analysis}
+
+  - id: eurostat-flagship-publications
+    name: "Eurostat – Vodeće publikacije (flagship publications)"
+    url: https://ec.europa.eu/eurostat/web/main/publications/flagship-publications
+    strategy: crawl
+    notes: "Zamenjuje EurostatReportsScraper (Eurostat regional yearbook)"
+    params:
+      steps:
+        - link_selector: "a[href*='products-flagship-publications/w/']"
+          title_filter: ["regional yearbook"]
+          latest: 1
+        - link_selector: "a[href*='.pdf']"
+          link_pattern: "download=true"
+          max: 1
+    usages:
+      - {section: market_analysis}
+
+  # The legacy StatisticsScraper reads the dissemination database (data.stat.gov.rs),
+  # not this publication listing, so this one is not covered yet
+  - id: rzs-publications
+    name: "RZS – Publikacije"
+    url: https://www.stat.gov.rs/publikacije/
+    strategy: crawl
+    status: needs_clarification
+    notes: "Lista svih publikacija RZS; koje publikacije (npr. Statistika biljne proizvodnje, G2024/3003)?"
+    usages:
+      - {section: market_analysis}
+
+  - id: rzs-g20243003
+    name: "RZS – Publikacija G20243003 (2024)"
+    url: https://publikacije.stat.gov.rs/G2024/Pdf/G20243003.pdf
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: carina
+    name: "Uprava carina Republike Srbije"
+    url: https://www.carina.rs/
+    strategy: crawl
+    status: needs_clarification
+    notes: "Navedena je samo početna strana; koji podaci se traže (izvoz/uvoz žitarica)?"
+    usages:
+      - {section: market_analysis}
+
+  - id: usda
+    name: "USDA"
+    url: https://www.usda.gov/
+    strategy: crawl
+    status: needs_clarification
+    notes: "Početna strana (403). Koji izveštaj: WASDE, PSD, Grain: World Markets and Trade?"
+    usages:
+      - {section: market_analysis}
+
+  - id: cme-cbot
+    name: "Čikaška berza (CME / CBOT)"
+    url: https://www.cmegroup.com/
+    strategy: live
+    status: needs_clarification
+    notes: "Početna strana (403). Koji ugovori (pšenica, kukuruz, soja)?"
+    usages:
+      - {section: price_analysis}
+
+  - id: euronext-matif
+    name: "Pariska berza (Euronext MATIF)"
+    url: https://www.euronext.com/
+    strategy: live
+    status: needs_clarification
+    notes: "Početna strana. Koji ugovori (milling wheat, corn, rapeseed)?"
+    usages:
+      - {section: price_analysis}
+
+  - id: polj-uns-field-vegetable-crops
+    name: "Poljoprivredni fakultet Novi Sad – Institut za ratarstvo i povrtarstvo"
+    url: https://polj.uns.ac.rs/
+    strategy: crawl
+    status: needs_clarification
+    notes: "Početna strana (timeout pri proveri). Koja publikacija?"
+    usages:
+      - {section: market_analysis}

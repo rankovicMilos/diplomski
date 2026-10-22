@@ -1,0 +1,66 @@
+industry: it
+
+sources:
+  - id: grandview-software-market
+    name: "Grand View Research – Software Market Report"
+    url: https://www.grandviewresearch.com/industry-analysis/software-market-report
+    strategy: single_url
+    status: blocked
+    notes: "Cloudflare zaštita (403); ceo izveštaj je plaćen"
+    usages:
+      - {section: market_analysis}
+
+  - id: grandview-smart-cities-market
+    name: "Grand View Research – Smart Cities Market"
+    url: https://www.grandviewresearch.com/industry-analysis/smart-cities-market
+    strategy: single_url
+    status: blocked
+    notes: "Cloudflare zaštita (403); ceo izveštaj je plaćen. Link u tekstu, nije citiran kao izvor"
+    usages:
+      - {section: market_analysis}
+
+  - id: grandview-e-commerce-market
+    name: "Grand View Research – E-commerce Market"
+    url: https://www.grandviewresearch.com/industry-analysis/e-commerce-market
+    strategy: single_url
+    status: blocked
+    notes: "Cloudflare zaštita (403); ceo izveštaj je plaćen. Link u tekstu, nije citiran kao izvor"
+    usages:
+      - {section: market_analysis}
+
+  - id: mordor-pc-market
+    name: "Mordor Intelligence – PC Market"
+    url: https://www.mordorintelligence.com/industry-reports/pc-market
+    strategy: single_url
+    notes: "Javni sažetak je dostupan; ceo izveštaj je plaćen"
+    usages:
+      - {section: market_analysis}
+
+  - id: biznis-rs-ict-sector-2025
+    name: "Biznis.rs – IKT sektor će i u 2025 biti naša najbrže rastuća privredna grana"
+    url: https://biznis.rs/vesti/srbija/ikt-sektor-ce-i-u-2025-biti-nasa-najbrze-rastuca-privredna-grana/
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: bif-it-sector-foreign-companies
+    name: "BIF.rs – Za uspeh našeg IT sektora najzaslužnije su strane kompanije"
+    url: https://bif.rs/2024/11/za-uspeh-naseg-it-sektora-najzasluznije-su-strane-kompanije
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: deloitte-technology-industry-outlook
+    name: "Deloitte Insights – Technology Industry Outlook"
+    url: https://www2.deloitte.com/us/en/insights/industry/technology/technology-media-telecom-outlooks/technology-industry-outlook.html
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: comptia-it-industry-trends
+    name: "CompTIA – IT Industry Trends Analysis"
+    url: https://www.comptia.org/content/research/it-industry-trends-analysis
+    strategy: single_url
+    notes: "Preusmerava na IT Industry Outlook 2025"
+    usages:
+      - {section: market_analysis}

@@ -1,0 +1,29 @@
+industry: paper_packaging
+
+sources:
+  - id: cepi-preliminary-statistics-2025
+    name: "CEPI – Preliminary Statistics 2025"
+    url: https://www.cepi.org/wp-content/uploads/2026/02/FINAL-Cepi-Preliminary-Statistics-2025.pdf
+    strategy: single_url
+    usages:
+      - {section: industry_analysis}
+
+  - id: tradingeconomics-kraft-pulp
+    name: "Trading Economics – Kraft Pulp price"
+    url: https://tradingeconomics.com/commodity/kraft-pulp
+    strategy: live
+    schedule: daily
+    params:
+      provider: meta_description
+      instrument: "Kraft Pulp"
+    usages:
+      - {section: price_analysis}
+
+  - id: ycharts-us-ppi-woodpulp
+    name: "YCharts – US Producer Price Index: Woodpulp"
+    url: https://ycharts.com/indicators/us_producer_price_index_pulp_paper_and_allied_products_woodpulp
+    strategy: single_url
+    status: blocked
+    notes: "Vraća prazan odgovor (zaštita od botova)"
+    usages:
+      - {section: price_analysis}

@@ -1,0 +1,80 @@
+industry: fuel
+
+sources:
+  # RZS dissemination database: CSV export of the dataset from the analysis
+  # (https://data.stat.gov.rs/Home/Result/060201010101)
+  - id: statgov-industrial-production-fuel
+    name: "RZS – Chain industrial production indices, by activity (060201010101)"
+    url: "https://data.stat.gov.rs/Home/DisplayResult?languageCode=en-US&displayMode=exportCSV&subAreaId=060201010101"
+    preset: rzs_csv
+    usages:
+      - {section: market_analysis}
+
+  # PKS pages are a React application: the HTML has no content without JavaScript.
+  - id: pks-quarterly-bulletins-energy
+    name: "PKS – Kvartalni bilteni (Energetika i rudarstvo)"
+    url: https://www.pks.rs/strana/kvartalni-bilteni-pks-energetika-i-rudarstvo
+    strategy: crawl
+    fetch_mode: browser
+    params:
+      steps:
+        # The page also lists the general "Poslovne i ekonomske informacije" bulletins
+        - link_selector: "a[href$='.pdf']"
+          title_filter: ["energetika"]
+          latest: 4
+    usages:
+      - {section: market_analysis}
+      - {section: price_analysis}
+
+  - id: pks-annual-bulletins
+    name: "PKS – Godišnji bilteni"
+    url: https://www.pks.rs/strana/godisnji-bilteni-pks
+    strategy: crawl
+    fetch_mode: browser
+    params:
+      steps:
+        # The page lists bulletins of all 20 PKS associations (2022–2025), in Serbian and
+        # English; the English links are sometimes broken, so only the Serbian one is taken
+        - link_selector: "a[href$='.pdf']"
+          title_filter: ["energetika i rudarstvo"]
+          latest: 2
+    usages:
+      - {section: market_analysis}
+      - {section: price_analysis}
+
+  - id: nis-business-results-2025
+    name: "NIS Investitori – NIS group business results in 2025"
+    url: https://ir.nis.rs/en/single-news/nis-group-business-results-in-2025/
+    strategy: single_url
+    params:
+      follow_doc_links:
+        pattern: "QR_.*\\.pdf$"
+        max: 1
+    usages:
+      - {section: market_position}
+      - {section: price_analysis}
+
+  - id: exchange-rates-usd-rsd-2025
+    name: "Exchange-rates.org – USD to RSD history 2025"
+    url: https://www.exchange-rates.org/exchange-rate-history/usd-rsd-2025
+    strategy: single_url
+    status: blocked
+    notes: "Cloudflare zaštita (403)"
+    usages:
+      - {section: price_analysis}
+
+  - id: autotraveler-fuel-prices-serbia
+    name: "Autotraveler – Trend price fuel Serbia"
+    url: https://autotraveler.ru/en/serbia/trend-price-fuel-serbia.html
+    strategy: live
+    schedule: weekly
+    params:
+      provider: html_table
+      # The page publishes no price date; its JSON-LD dateModified is stale page metadata
+      page_metadata_timestamp: false
+      tables:
+        - header_contains: "Type of fuel"
+          titles: ["Fuel prices in Serbia (EUR)", "Fuel prices in Serbia (RSD)"]
+          count: 2
+    usages:
+      - {section: price_analysis}

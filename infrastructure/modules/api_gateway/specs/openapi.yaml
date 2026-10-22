@@ -1,0 +1,469 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Sector Risk Analysis API",
+    "version": "1.0.0"
+  },
+  "paths": {
+      "/analyses/{category}": {
+      "options": {
+        "summary": "CORS support",
+        "responses": {
+          "200": {
+            "description": "CORS OK",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": {
+                "schema": { "type": "string" }
+              }
+            },
+            "content": {}
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "mock",
+          "requestTemplates": {
+            "application/json": "{\"statusCode\": 200}"
+          },
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              },
+              "responseTemplates": {
+                "application/json": "{}"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get analysis document by category",
+        "description": "Retrieves sector analysis document by its category",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "description": "The category of the analysis document to retrieve",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with the analysis document",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisDocument"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key"
+          },
+          "404": {
+            "description": "Analysis document not found for the specified category"
+          },
+         "500": {
+            "description": "Internal server error"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${region}:${account_id}:function:${get_analyses_by_category_lambda_name}/invocations"
+        }
+      }
+    },
+    "/analyses/client/{id}": {
+      "options": {
+        "summary": "CORS support",
+        "responses": {
+          "200": {
+            "description": "CORS OK",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": {
+                "schema": { "type": "string" }
+              }
+            },
+            "content": {}
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "mock",
+          "requestTemplates": {
+            "application/json": "{\"statusCode\": 200}"
+          },
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              },
+              "responseTemplates": {
+                "application/json": "{}"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all analysis documents by client ID",
+        "description": "Retrieves a list of all sector analysis documents for a specific client ID from the server",
+        "responses": {
+          "200": {
+            "description": "Successful response with list of analysis documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AnalysisDocument"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${region}:${account_id}:function:${get_client_analyses_lambda_name}/invocations"
+        }
+      }
+    },
+    "/analyses": {
+      "options": {
+        "summary": "CORS support",
+        "responses": {
+          "200": {
+            "description": "CORS OK",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": {
+                "schema": { "type": "string" }
+              }
+            },
+            "content": {}
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "mock",
+          "requestTemplates": {
+            "application/json": "{\"statusCode\": 200}"
+          },
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              },
+              "responseTemplates": {
+                "application/json": "{}"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all analysis documents",
+        "description": "Retrieves a list of all sector analysis documents from the server",
+        "responses": {
+          "200": {
+            "description": "Successful response with list of analysis documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AnalysisDocument"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${region}:${account_id}:function:${get_analyses_lambda_name}/invocations"
+        }
+      },
+      "post": {
+        "summary": "Generate new peer analysis document",
+        "description": "Creates a new peer analysis document based on the provided name and category ID",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAnalysisRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Analysis document created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisDocument"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input parameters"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${region}:${account_id}:function:${orchestrator_lambda_name}/invocations"
+        }
+      }
+    },
+    "/upload": {
+      "options": {
+        "summary": "CORS support",
+        "responses": {
+          "200": {
+            "description": "CORS OK",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Methods": {
+                "schema": { "type": "string" }
+              },
+              "Access-Control-Allow-Headers": {
+                "schema": { "type": "string" }
+              }
+            },
+            "content": {}
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "mock",
+          "requestTemplates": {
+            "application/json": "{\"statusCode\": 200}"
+          },
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Methods": "'POST,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              },
+              "responseTemplates": {
+                "application/json": "{}"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Upload files to S3",
+        "description": "Uploads one or more files to the S3 bucket from the server",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Files uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - No files provided or invalid file format"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${region}:${account_id}:function:${trigger_upload_lambda_name}/invocations"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnalysisDocument": {
+        "type": "object",
+        "required": [
+          "id",
+          "clientName",
+          "category",
+          "categoryId"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the analysis document"
+          },
+          "clientName": {
+            "type": "string",
+            "description": "Name of the analysis document"
+          },
+          "category": {
+            "type": "string",
+            "description": "Category of the analysis document"
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "Unique identifier for the category"
+          },
+          "content": {
+            "type": "object",
+            "description": "The analysis document content"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the document was created"
+          }
+        }
+      },
+      "CreateAnalysisRequest": {
+        "type": "object",
+        "required": [
+          "clientName",
+          "categoryId"
+        ],
+        "properties": {
+          "clientName": {
+            "type": "string",
+            "description": "Name for the new analysis document"
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "ID of the category for the new document"
+          }
+        }
+      },
+      "UploadRequest": {
+        "type": "object",
+        "required": [
+          "filename",
+          "content_type"
+        ],
+        "properties": {
+          "filename": {
+            "type": "string",
+            "description": "Name of the file to upload",
+            "example": "almex_report.pdf"
+          },
+          "content_type": {
+            "type": "string",
+            "description": "MIME type of the file",
+            "example": "application/pdf"
+          }
+        }
+      },
+      "UploadResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the upload was successful"
+          },
+          "uploadedFiles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "description": "S3 object key"
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "URL to access the uploaded file"
+                },
+                "bucket": {
+                  "type": "string",
+                  "description": "bucket name"
+                },
+                "expires_in": {
+                  "type": "integer",
+                  "description": "duration of link"
+                }
+              }
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "Status message"
+          }
+        }
+      }
+    }
+  }
+}

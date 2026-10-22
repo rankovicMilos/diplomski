@@ -1,0 +1,61 @@
+industry: livestock
+
+sources:
+  # RZS dissemination database: CSV exports of the datasets from the analysis
+  # (https://data.stat.gov.rs/Home/Result/<id>)
+  - id: statgov-livestock-130202010300
+    name: "RZS – Slaughtered livestock (130202010300)"
+    url: "https://data.stat.gov.rs/Home/DisplayResult?languageCode=en-US&displayMode=exportCSV&subAreaId=130202010300"
+    preset: rzs_csv
+    usages:
+      - {section: market_analysis}
+
+  - id: statgov-livestock-130202010401
+    name: "RZS – Livestock production: increase of livestock and production of meat (130202010401)"
+    url: "https://data.stat.gov.rs/Home/DisplayResult?languageCode=en-US&displayMode=exportCSV&subAreaId=130202010401"
+    preset: rzs_csv
+    usages:
+      - {section: market_analysis}
+
+  - id: statgov-livestock-13020201050302
+    name: "RZS – Number of pigs (13020201050302)"
+    url: "https://data.stat.gov.rs/Home/DisplayResult?languageCode=en-US&displayMode=exportCSV&subAreaId=13020201050302"
+    preset: rzs_csv
+    usages:
+      - {section: market_analysis}
+
+  # Covers both minpolj links from the analysis: the report listing and the
+  # "Izveštaj o tržištu svinja i svinjskog mesa" download.
+  - id: minpolj-livestock-market-reports
+    name: "Ministarstvo poljoprivrede – Izveštaji sa tržišta (stoka i meso)"
+    url: https://www.minpolj.gov.rs/izvestaji-sa-trzista/
+    strategy: crawl
+    fetch:
+      verify_ssl: false
+    params:
+      steps:
+        - item_selector: "div.well"
+          title_selector: "h3.media-heading a"
+          link_selector: "a.wpdm-download-link"
+          link_attr: data-downloadurl
+          match_usages: true
+          latest: 3
+    usages:
+      - {section: price_analysis, topic: pork, keyword: "свиња"}
+
+  # Mentioned in the industry text without a link
+  - id: usda-ers-livestock
+    name: "USDA – Economic Research Service (ERS)"
+    strategy: single_url
+    status: needs_clarification
+    notes: "Pomenut bez linka; koji izveštaj (npr. Livestock, Dairy, and Poultry Outlook)?"
+    usages:
+      - {section: market_analysis}
+
+  - id: fao-livestock
+    name: "FAO – Food and Agriculture Organization of the UN"
+    strategy: single_url
+    status: needs_clarification
+    notes: "Pomenut bez linka; koji podaci (npr. FAOSTAT stočarstvo, Food Outlook)?"
+    usages:
+      - {section: market_analysis}

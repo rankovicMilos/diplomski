@@ -1,0 +1,52 @@
+industry: real_estate
+
+sources:
+  # The topic page is rendered by Angular; links only appear after JavaScript runs.
+  - id: statgov-construction-topic
+    name: "RZS – Građevinarstvo (oblast)"
+    url: https://www.stat.gov.rs/sr-latn/oblasti/gradjevinarstvo
+    strategy: crawl
+    fetch_mode: browser
+    params:
+      steps:
+        - link_pattern: "publikacije\\.stat\\.gov\\.rs/.*\\.pdf"
+          latest: 3
+    usages:
+      - {section: industry_analysis}
+
+  - id: rzs-g20263003
+    name: "RZS – Publikacija G20263003"
+    url: https://publikacije.stat.gov.rs/G2026/Pdf/G20263003.pdf
+    strategy: single_url
+    usages:
+      - {section: industry_analysis}
+
+  # Replaces the fixed links from the analysis (Office/Retail/Industrial Q1 2026,
+  # Residential Q2 2025): CBRE redirects old quarters to its search once a new one is
+  # published. The search lists the latest "Belgrade ... Figures" report per segment;
+  # each report page links the full PDF. Plain HTTP is blocked by Cloudflare, a browser passes.
+  - id: cbre-belgrade-figures
+    name: "CBRE – Belgrade Figures (Office, Retail, Industrial, Residential)"
+    url: "https://www.cbre.com/insights/search-insights-results#q=Belgrade%20Figures&sort=date%20descending&numberOfResults=24"
+    strategy: crawl
+    fetch_mode: browser
+    schedule: quarterly
+    params:
+      steps:
+        # Search results (rendered by JavaScript): latest report page per segment
+        - wait_for_selector: "a[href*='/insights/figures/belgrade-']"
+          link_pattern: "/insights/figures/belgrade-[a-z]+-figures-q[1-4]-\\d{4}$"
+          match_usages: true
+          latest: 1
+        # Report page: the "Download" link to the full PDF
+        - link_pattern: "mktgdocs\\.cbre\\.com/.*\\.pdf$"
+          max: 1
+    usages:
+      - {section: market_analysis, topic: office, keyword: "belgrade-office-figures"}
+      - {section: price_analysis, topic: office, keyword: "belgrade-office-figures"}
+      - {section: market_analysis, topic: retail, keyword: "belgrade-retail-figures"}
+      - {section: price_analysis, topic: retail, keyword: "belgrade-retail-figures"}
+      - {section: market_analysis, topic: industrial, keyword: "belgrade-industrial-figures"}
+      - {section: price_analysis, topic: industrial, keyword: "belgrade-industrial-figures"}
+      - {section: market_analysis, topic: residential, keyword: "belgrade-residential-figures"}
+      - {section: price_analysis, topic: residential, keyword: "belgrade-residential-figures"}

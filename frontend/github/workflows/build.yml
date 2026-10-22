@@ -1,0 +1,28 @@
+name: Feature Branch Build
+
+on:
+    push:
+        branches:
+            - "feature/*"
+            - "feat/*"
+            - "bugfix/*"
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Clone repository
+              uses: actions/checkout@v4
+
+            - name: Use Node.js 20
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: 'npm'
+            
+            - name: Install dependencies
+              run: npm install
+
+            - name: Build React application
+              run: npm run build

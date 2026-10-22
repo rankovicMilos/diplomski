@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@plugin 'tailwind-scrollbar';
+
+:root {
+  --background: #ffffff;
+  --foreground: #f4f4f4;
+  --primary: #fee600;
+  --secondary: #037080;
+}
+
+@theme inline {
+  /* --color-background: var(--background); */
+  /* --color-foreground: var(--foreground); */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #f4f4f4;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  scrollbar-gutter: stable;
+}
+
+a {
+  &:hover {
+    text-decoration: underline;
+    color: var(--secondary)
+  }
+}

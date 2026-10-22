@@ -1,0 +1,9 @@
+# Local scraper output (cli.py --storage local)
+output/
+
+.venv/
+__pycache__/
+.pytest_cache/
+
+# Lambda deployment package (manual deploy)
+build/

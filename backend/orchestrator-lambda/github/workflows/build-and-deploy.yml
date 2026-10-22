@@ -1,0 +1,64 @@
+name: Feature Branch Build
+
+on:
+    pull_request:
+        types:
+            - closed
+        branches:
+            - develop
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Clone repository
+              uses: actions/checkout@v4
+
+            - name: Install uv
+              run: pipx install uv
+
+            - name: Install dependecies
+              run: uv pip install . --target package/
+
+            - name: Copy src files
+              run: cp -r src/* package/
+            
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v3
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ secrets.AWS_REGION }}
+            
+            - name: Deploy Orchestrator Lambda function
+              uses: aws-actions/aws-lambda-deploy@v1.1.0
+              with:
+                  function-name: ${{ secrets.ORCHESTRATOR_FUNCTION_NAME }}
+                  code-artifacts-dir: package/
+                  handler: src.handlers.orchestrator.lambda_handler
+                  runtime: python3.11
+
+            - name: Deploy Get All Analyses Lambda function
+              uses: aws-actions/aws-lambda-deploy@v1.1.0
+              with:
+                  function-name: ${{ secrets.ANALYSES_FUNCTION_NAME }}
+                  code-artifacts-dir: package/
+                  handler: src.handlers.orchestrator.getAnalyses
+                  runtime: python3.11
+
+            - name: Deploy Get Analyses By Category Lambda function
+              uses: aws-actions/aws-lambda-deploy@v1.1.0
+              with:
+                  function-name: ${{ secrets.ANALYSES_CATEGORY_FUNCTION_NAME }}
+                  code-artifacts-dir: package/
+                  handler: src.handlers.orchestrator.getAnalysisByCategory
+                  runtime: python3.11
+            
+            - name: Deploy Get Client Analyses Lambda function
+              uses: aws-actions/aws-lambda-deploy@v1.1.0
+              with:
+                  function-name: ${{ secrets.ANALYSES_CLIENT_FUNCTION_NAME }}
+                  code-artifacts-dir: package/
+                  handler: src.handlers.orchestrator.getClientAnalyses
+                  runtime: python3.11

@@ -1,0 +1,74 @@
+industry: fertilizers
+
+sources:
+  - id: statista-global-co2-emissions
+    name: "Statista – Annual CO₂ emissions worldwide"
+    url: https://www.statista.com/statistics/276629/global-co2-emissions/
+    strategy: single_url
+    status: paywall
+    notes: "Podaci su iza Statista paywall-a (link se u analizi pojavljuje 2 puta)"
+    usages:
+      - {section: market_analysis}
+
+  - id: ifa-proba-ghg-program
+    name: "International Fertilizer Association and Proba – GHG emissions reduction program"
+    url: https://www.fertilizer.org/news/ifa-proba-ghg-emissions-reduction/
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: google-fertilizer-consumption-2023
+    name: "Google search – global fertilizer consumption 2023"
+    url: https://www.google.rs/search?q=What+is+the+global+fertilizer+consumption+in+2023%3F
+    strategy: single_url
+    status: not_found
+    notes: "Google pretraga nije izvor; treba navesti stvarni izvor podatka"
+    usages:
+      - {section: market_analysis}
+
+  - id: gpca-fertilizer-demand-recovery
+    name: "GPCA – Global fertilizer demand begins its recovery after a rocky two years"
+    url: https://www.gpca.org.ae/2024/09/27/global-fertilizer-demand-begins-its-recovery-after-a-rocky-two-years/
+    strategy: single_url
+    usages:
+      - {section: market_analysis}
+
+  - id: indexmundi-urea-price
+    name: "IndexMundi – Urea monthly price"
+    url: https://www.indexmundi.com/commodities/?commodity=urea&months=60
+    strategy: live
+    schedule: monthly
+    params:
+      provider: html_table
+      timestamp_pattern: "Data as of ([A-Z][a-z]+ \\d{4})"
+      tables:
+        - header_contains: "Month"
+          title: "Urea monthly price (USD per metric ton)"
+    usages:
+      - {section: price_analysis}
+
+  - id: ifa-five-market-dynamics-2022
+    name: "IFA – Five fertilizer market dynamics that tell the story of 2022"
+    url: https://www.fertilizer.org/news/five-fertilizer-market-dynamics-that-tell-the-story-of-2022/
+    strategy: single_url
+    status: not_found
+    usages:
+      - {section: price_analysis}
+
+  - id: ifa-press-releases
+    name: "IFA – Press releases"
+    url: https://www.fertilizer.org/news-events/press-releases/
+    strategy: single_url
+    status: not_found
+    notes: "Vraća 404"
+    usages:
+      - {section: price_analysis}
+
+  - id: fitch-fertiliser-price-assumptions-2024
+    name: "Fitch Ratings – Updates near-term fertiliser price assumptions (11-09-2024)"
+    url: https://www.fitchratings.com/research/corporate-finance/fitch-ratings-updates-near-term-fertiliser-price-assumptions-11-09-2024
+    strategy: single_url
+    status: paywall
+    notes: "Sadržaj se renderuje JavaScriptom i iza je prijave"
+    usages:
+      - {section: price_analysis}

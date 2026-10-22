@@ -1,0 +1,10 @@
+industry: retail_wholesale
+
+sources:
+  # Cited 3 times in the report; scraped once with all usages.
+  - id: rzs-g20268001
+    name: "RZS – Publikacija G20268001"
+    url: https://publikacije.stat.gov.rs/G2026/PdfE/G20268001.pdf
+    strategy: single_url
+    usages:
+      - {section: industry_analysis}

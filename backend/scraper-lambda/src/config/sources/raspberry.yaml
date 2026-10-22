@@ -1,0 +1,53 @@
+industry: raspberry
+
+sources:
+  - id: faostat
+    name: "FAOSTAT"
+    url: https://www.fao.org/faostat
+    strategy: single_url
+    status: needs_clarification
+    notes: "SPA; FAOSTAT API traži token (besplatna registracija). Treba odlučiti da li registrujemo nalog"
+    usages:
+      - {section: market_analysis}
+
+  # RZS dissemination database: CSV exports (https://data.stat.gov.rs/Home/Result/<id>)
+  # 130102 holds all crops; keep berries only
+  - id: statgov-crop-production-130102
+    name: "RZS – Crop production: raspberries, blackberries, blueberries (130102)"
+    url: "https://data.stat.gov.rs/Home/DisplayResult?languageCode=en-US&displayMode=exportCSV&subAreaId=130102"
+    preset: rzs_csv
+    params:
+      csv:
+        row_filter: "raspberr|blackberr|blueberr"
+    usages:
+      - {section: market_analysis}
+
+  # External trade by SITC product group; raspberries are not a separate line,
+  # they fall under 057 (fresh fruit) and 058 (preserved/frozen fruit)
+  - id: statgov-external-trade-170304
+    name: "RZS – Exports and imports of fruit, SITC 057 and 058 (170304)"
+    url: "https://data.stat.gov.rs/Home/DisplayResult?languageCode=en-US&displayMode=exportCSV&subAreaId=170304"
+    preset: rzs_csv
+    params:
+      csv:
+        row_filter: "^05[78] - "
+    usages:
+      - {section: market_analysis}
+
+  - id: rzs-general-raspberry
+    name: "RZS – stat.gov.rs (tabela napravljena iz podataka RZS)"
+    url: https://www.stat.gov.rs
+    strategy: crawl
+    status: needs_clarification
+    notes: "Opšta referenca bez konkretne stranice; iz kog skupa podataka je tabela?"
+    usages:
+      - {section: market_analysis}
+
+  - id: trademap-frozen-berries
+    name: "ITC Trade Map – Exporters of frozen berries (HS 081120)"
+    url: https://www.trademap.org/Country_SelProduct.aspx
+    strategy: single_url
+    status: paywall
+    notes: "Zahteva prijavu"
+    usages:
+      - {section: market_analysis}

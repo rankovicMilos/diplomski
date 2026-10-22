@@ -1,0 +1,33 @@
+s3:
+  bucket: "sra-thesis-client-data"
+  region: "eu-central-1"
+
+presigned_url:
+  expiration_seconds: 3600  # 1 hour
+
+# File type configurations - each type has its own directory
+# Extend this map when adding new supported formats
+file_types:
+  pdf:
+    content_type: "application/pdf"
+    upload_prefix: "market_position_data/pdf"
+  xlsx:
+    content_type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    upload_prefix: "market_position_data/excel"
+  xls:
+    content_type: "application/vnd.ms-excel"
+    upload_prefix: "market_position_data/excel"
+  csv:
+    content_type: "text/csv"
+    upload_prefix: "market_position_data/csv"
+
+# Excel to CSV conversion settings
+conversion:
+  # S3 prefix where converted CSV files will be stored
+  output_prefix: "peer_data"
+  # Source prefix to watch for Excel files (S3 trigger)
+  source_prefix: "market_position_data/excel"
+  # Supported Excel extensions for conversion
+  supported_extensions:
+    - ".xlsx"
+    - ".xls"

@@ -1,0 +1,41 @@
+[project]
+name = "orchestrator-lambda"
+version = "0.1.0"
+description = "Orchestrator Lambda - RAG market analysis with Claude"
+requires-python = ">=3.11"
+
+dependencies = [
+    "anthropic>=0.70.0",
+    "boto3>=1.35.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+# Local retrieval backend (RETRIEVAL_BACKEND=local): vector index, embeddings, text extraction
+local-rag = [
+    "chromadb>=1.0.0",
+    "sentence-transformers>=3.0.0",
+    # 2.x is an empty placeholder package; the converter is in 1.x
+    "pymupdf4llm>=1.27,<2",
+    "python-docx>=1.1.0",
+    "openpyxl>=3.1.0",
+    "xlrd>=2.0.1",
+]
+
+[dependency-groups]
+dev = [
+    "fastapi>=0.115.0",
+    "uvicorn>=0.30.0",
+    "pytest>=8.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

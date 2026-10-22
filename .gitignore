@@ -1,0 +1,29 @@
+# Secrets
+.env
+*.tfvars
+
+# Local runtime data: scraped documents, uploads, generated reports, vector index
+data/
+.chroma/
+demo-data/private/
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+next-env.d.ts
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+
+.DS_Store
+
+# Playwright MCP browser artifacts
+.playwright-mcp/
