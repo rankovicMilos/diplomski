@@ -299,9 +299,8 @@ interface IMarketPositionsResponse {
 export interface MarketPositionRequestBody {
   analysis_id: string,
   analysis_type: string,
-  client_data_key?: string,
   client_name: string,
-  total_revenue?: number,
+  total_revenue: number,
   nace_code: string,
   commodities: {
     name: string,
