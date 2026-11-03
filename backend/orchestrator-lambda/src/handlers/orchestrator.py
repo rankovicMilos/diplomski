@@ -369,8 +369,10 @@ def handle_market_position(event: dict, context) -> dict:
     client_name = event.get("client_name")  # Optional override for model extraction
     analysis_id = event.get("analysis_id")  # Optional UUID from FE for custom file naming
 
-    if not client_data_key:
-        return validation_error("client_data_key is required for market_position")
+    total_revenue = event.get("total_revenue")
+
+    if not client_data_key and total_revenue is None:
+        return validation_error("total_revenue (or client_data_key) is required for market_position")
 
     # Auto-select latest market analysis if not provided: the client's industry first
     # (industry_analysis/<industry>/), then the published market_analysis/ reports
@@ -427,6 +429,7 @@ def handle_market_position(event: dict, context) -> dict:
             "=== PARAMETERS ===\n"
             f"commodities (with estimated revenue share):\n{commodities_formatted}\n"
             f"primary_currency: {primary_currency}\n"
+            f"total_revenue: {total_revenue if total_revenue is not None else 'null'}\n"
             f"fx_rate_eur_rsd: {fx_rate_eur_rsd if fx_rate_eur_rsd is not None else 'null'}\n"
             f"fx_rate_date: {fx_rate_date if fx_rate_date is not None else 'null'}\n\n"
             "IMPORTANT: Calculate weighted market position based on revenue percentages.\n"
@@ -439,12 +442,22 @@ def handle_market_position(event: dict, context) -> dict:
             "=== PARAMETERS ===\n"
             f"primary_commodity: {primary_commodity}\n"
             f"primary_currency: {primary_currency}\n"
+            f"total_revenue: {total_revenue if total_revenue is not None else 'null'}\n"
             f"fx_rate_eur_rsd: {fx_rate_eur_rsd if fx_rate_eur_rsd is not None else 'null'}\n"
             f"fx_rate_date: {fx_rate_date if fx_rate_date is not None else 'null'}\n\n"
         )
 
-    # Check if client data is PDF or markdown
-    if client_data_key.lower().endswith(".pdf"):
+    # Check if client data is absent, PDF or markdown
+    if not client_data_key:
+        logger.info("No client data file, using total_revenue only")
+        combined_context = (
+            f"{parameters_block}"
+            "<<<MARKET_ANALYSIS_JSON>>>\n"
+            f"{market_analysis}\n"
+            "<<<END_MARKET_ANALYSIS_JSON>>>"
+        )
+        response = llm_service.generate_only(combined_context, MARKET_POSITION_PROMPT)
+    elif client_data_key.lower().endswith(".pdf"):
         logger.info("Using PDF document flow for client data")
         client_pdf_bytes = storage.read_pdf(CLIENT_DATA_BUCKET, client_data_key)
 
