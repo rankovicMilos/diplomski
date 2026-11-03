@@ -19,8 +19,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sector Risk Analysis",
-  description: "AI-assisted sector and credit risk analysis (bachelor thesis project)",
+  title: "Analiza sektorskog rizika",
+  description: "Analiza sektora i kreditnog rizika uz pomoć veštačke inteligencije (diplomski rad)",
 };
 
 export default function RootLayout({
@@ -29,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="[scrollbar-gutter:stable]">
+    <html lang="sr-Latn" className="[scrollbar-gutter:stable]">
       <NuqsAdapter>
         <ThemeWrapper>
           <body

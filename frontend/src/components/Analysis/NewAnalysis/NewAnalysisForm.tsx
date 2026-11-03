@@ -35,25 +35,25 @@ const NewAnalysisForm = () => {
 
 	const [crops, setCrops] = useState([
 		{
-			label: "Wheat",
+			label: "Pšenica",
 			name: "wheat",
 			isSelected: true,
 			revenue_pct: 25
 		},
 		{
-			label: "Corn",
+			label: "Kukuruz",
 			name: "corn",
 			isSelected: true,
 			revenue_pct: 25
 		},
 		{
-			label: "Soybean",
+			label: "Soja",
 			name: "soybean",
 			isSelected: true,
 			revenue_pct: 25
 		},
 		{
-			label: "Sunflower",
+			label: "Suncokret",
 			name: "sunflower",
 			isSelected: true,
 			revenue_pct: 25
@@ -126,7 +126,7 @@ const NewAnalysisForm = () => {
 							error.name === "TimeoutError" ||
 							(error as { code?: string }).code === "ECONNABORTED");
 					if (isTimeoutError) {
-						setTimeoutError("Market position generation timed out");
+						setTimeoutError("Isteklo je vreme za generisanje tržišne pozicije");
 					} else {
 						setError((error as Error).message);
 					}
@@ -164,7 +164,7 @@ const NewAnalysisForm = () => {
 	if (showAnalysisGenerated)
 		return (
 			<div>
-				<h2>Report generated! :)</h2>
+				<h2>Izveštaj je generisan! :)</h2>
 			</div>
 		);
 
@@ -172,7 +172,7 @@ const NewAnalysisForm = () => {
 		return (
 			<div>
 				<p className="mb-4 text-red-100">{error}</p>
-				<p>Please try again later</p>
+				<p>Pokušajte ponovo kasnije</p>
 			</div>
 		);
 
@@ -180,8 +180,8 @@ const NewAnalysisForm = () => {
 		return (
 			<div>
 				<h2>
-					This action took longer than expected, please return to the home page
-					or try again
+					Radnja je trajala duže od očekivanog. Vratite se na početnu stranu
+					ili pokušajte ponovo
 				</h2>
 			</div>
 		);
@@ -194,7 +194,7 @@ const NewAnalysisForm = () => {
 						value={companyName}
 						onChange={(e) => setCompanyName(e.target.value)}
 						size="small"
-						label="Company name"
+						label="Naziv preduzeća"
 						className="col-span-5"
 						required
 					/>
@@ -215,7 +215,7 @@ const NewAnalysisForm = () => {
 						onChange={(e) => setTotalRevenue(e.target.value)}
 						type="number"
 						size="small"
-						label={`Total revenue (${curreny})`}
+						label={`Ukupan prihod (${curreny})`}
 						className="col-span-6"
 						slotProps={{ htmlInput: { min: 0 } }}
 						required
@@ -225,7 +225,7 @@ const NewAnalysisForm = () => {
 						onChange={(e) => setRateEurDin(e.target.value)}
 						type="number"
 						size="small"
-						label="Rate EUR-DIN"
+						label="Kurs EUR/RSD"
 						className="col-span-2"
 						required
 					/>
@@ -234,7 +234,7 @@ const NewAnalysisForm = () => {
 						onChange={(e) => setRateDate(e.target.value)}
 						type="date"
 						size="small"
-						label="Rate date"
+						label="Datum kursa"
 						className="col-span-2"
 						required
 					/>
@@ -242,7 +242,7 @@ const NewAnalysisForm = () => {
 			</div>
 
 			<div className="flex flex-col gap-3">
-				<h5 className="text-md font-semibold">Commodities: </h5>
+				<h5 className="text-md font-semibold">Proizvodi: </h5>
 				{crops.map((crop) => (
 					<div key={crop.name} className="flex items-center gap-3">
 						<Checkbox
@@ -271,14 +271,14 @@ const NewAnalysisForm = () => {
 				))}
 				{!isRevenueValid && (
 					<p className="text-xs text-red-100">
-						Total revenue percentage must be between values 0 and 100 (current:{" "}
+						Zbir procenata učešća u prihodima mora biti veći od 0 i najviše 100 (trenutno:{" "}
 						{selectedCropsRevenueTotal}%)
 					</p>
 				)}
 			</div>
 
 			<Button onClick={onSubmit} loading={isPending} disabled={!isFormValid}>
-				Generate UAF
+				Generiši UAF
 			</Button>
 		</>
 	);

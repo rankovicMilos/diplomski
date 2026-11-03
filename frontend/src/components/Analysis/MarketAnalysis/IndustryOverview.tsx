@@ -16,13 +16,13 @@ const IndustryOverview = ({ industry }: IndustryOverviewProps) => {
         {/* TODO: only Electricity has its own UAF form for now */}
         {industry.id === "electricity" &&
           <Link href="/analysis/new/electricity" className="self-end" prefetch={false}>
-            Generate New UAF
+            Generiši novi UAF
           </Link>
         }
         <h1>
           {industry.name}
         </h1>
-        <h3 className="text-md">Market and Price Analysis Report</h3>
+        <h3 className="text-md">Izveštaj o analizi tržišta i cena</h3>
 
         <p>
           <strong>NACE: </strong>
@@ -32,7 +32,7 @@ const IndustryOverview = ({ industry }: IndustryOverviewProps) => {
         </ul>
 
         <p className="text-charcoal-80">
-          Analysis for this industry has not been generated yet.
+          Analiza za ovu industriju još nije generisana.
         </p>
       </div>
 
@@ -52,7 +52,7 @@ const IndustryOverview = ({ industry }: IndustryOverviewProps) => {
         </div>
       )}
 
-      {industry.sections.length === 0 && <p>No sections defined for this industry yet.</p>}
+      {industry.sections.length === 0 && <p>Za ovu industriju još nisu definisane sekcije.</p>}
     </div>
   )
 }

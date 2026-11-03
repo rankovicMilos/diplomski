@@ -4,7 +4,7 @@ const NewPeerAnalysis = () => {
 
   return (
     <div className="flex flex-col gap-5">
-      <h1>Generate UAF (User Acceptance Form)</h1>
+      <h1>Generisanje UAF obrasca</h1>
       <NewAnalysisForm />
 
     </div>

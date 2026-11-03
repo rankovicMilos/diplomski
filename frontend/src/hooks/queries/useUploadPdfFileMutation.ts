@@ -7,7 +7,7 @@ const useUploadPdfFileMutation = () =>
 		mutationFn: async (file: UploadedFile) => {
 			const res = await uploadPdfFile(file);
 			if (res.status === 200) return res;
-			throw new Error("Failed to upload PDF file");
+			throw new Error("Neuspelo otpremanje PDF datoteke");
 		},
 		retry: false,
 	});

@@ -12,7 +12,7 @@ const PeerRankings = ({ peerRankings }: PeerRankingsProps) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <h4 className="font-semibold text-teal-100">Peer rankings</h4>
+      <h4 className="font-semibold text-teal-100">Rang lista preduzeća</h4>
 
       {Object.entries(peerRankings).map(([key, ranking]) => (
         <div key={key}>

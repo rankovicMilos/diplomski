@@ -57,16 +57,16 @@ const DragAndDropFile = ({ onSelectFile }: DragAndDropFileProps) => {
     if (!droppedFile) return;
 
     if (e.dataTransfer.files.length > 1) {
-      alert(`You can upload only one file at the time!`);
+      alert(`Možete otpremiti samo jednu datoteku odjednom!`);
       return;
     }
 
     if (droppedFile.size > MAX_FILE_SIZE) {
-      alert(`File ${droppedFile.name} exceeds 10MB limit`);
+      alert(`Datoteka ${droppedFile.name} premašuje ograničenje od 10 MB`);
       return;
     }
     if (!ALLOWED_TYPES.includes(droppedFile.type)) {
-      alert(`File type ${droppedFile.type} not allowed`);
+      alert(`Tip datoteke ${droppedFile.type} nije dozvoljen`);
       return;
     }
 
@@ -86,11 +86,11 @@ const DragAndDropFile = ({ onSelectFile }: DragAndDropFileProps) => {
     if (!selectedFile) return;
 
     if (selectedFile.size > MAX_FILE_SIZE) {
-      alert(`File ${selectedFile.name} exceeds 10MB limit`);
+      alert(`Datoteka ${selectedFile.name} premašuje ograničenje od 10 MB`);
       return;
     }
     if (!ALLOWED_TYPES.includes(selectedFile.type)) {
-      alert(`File type ${selectedFile.type} not allowed`);
+      alert(`Tip datoteke ${selectedFile.type} nije dozvoljen`);
       return;
     }
 
@@ -111,7 +111,7 @@ const DragAndDropFile = ({ onSelectFile }: DragAndDropFileProps) => {
       <div
         role="button"
         tabIndex={0}
-        aria-label="Upload file: drag and drop or click to select"
+        aria-label="Otpremanje datoteke: prevucite i otpustite ili kliknite za izbor"
         className={cn("rounded-xs flex flex-col justify-center items-center py-16 border-1 border-dashed bg-yellow-10 hover:bg-yellow-20 border-yellow-100 cursor-pointer", {
           "bg-yellow-20": isDragging
         })}
@@ -130,10 +130,10 @@ const DragAndDropFile = ({ onSelectFile }: DragAndDropFileProps) => {
         <FileUploadOutlined sx={{ fontSize: 60 }} color="disabled" />
 
         <span className="text-md text-charcoal-90 font-semibold mt-4">
-          Drop a file here
+          Otpustite datoteku ovde
         </span>
         <span className="text-xs text-charcoal-70">
-          or click to select a file
+          ili kliknite da izaberete datoteku
         </span>
         <input
           id={inputId}

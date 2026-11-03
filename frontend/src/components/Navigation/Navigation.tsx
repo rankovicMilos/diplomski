@@ -30,8 +30,8 @@ const Navigation = () => {
       "flex flex-col shrink-0  overflow-y-auto self-start scrollbar-thin [scrollbar-gutter:stable]",
       "px-4 border-r-1 border-charcoal-25  pt-8 gap-6 pb-10 bg-steel-10"
     )}>
-      <h3 className="text-charcoal-100 font-bold text-lg">NACE Hierarchy Navigator</h3>
-      <TextField className="bg-white-100" size="small" fullWidth placeholder="Search" slotProps={{
+      <h3 className="text-charcoal-100 font-bold text-lg">NACE hijerarhija</h3>
+      <TextField className="bg-white-100" size="small" fullWidth placeholder="Pretraga" slotProps={{
         input: {
           startAdornment: (<InputAdornment position="start">
             <Search />
@@ -47,7 +47,7 @@ const Navigation = () => {
         selectedItem={selectedPath.at(-1)}
         openItems={selectedPath.slice(0, -1)}
       />
-      {filteredCategories.length === 0 && <p className="text-charcoal-80 text-sm">No NACE codes match &quot;{searchQuery}&quot;</p>}
+      {filteredCategories.length === 0 && <p className="text-charcoal-80 text-sm">Nijedna NACE šifra ne odgovara pretrazi „{searchQuery}“</p>}
     </div>
   )
 }

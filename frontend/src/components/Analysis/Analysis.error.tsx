@@ -14,11 +14,11 @@ const AnalysisError = () => {
           <Avatar sx={{ width: 56, height: 56, bgcolor: "#d32f2f" }}  > <WarningAmberRounded sx={{ fontSize: 32, color: "#000000" }} /></Avatar>
 
           <h1 className="text-2xl font-bold text-gray-800">
-            Something went wrong
+            Nešto nije u redu
           </h1>
 
           <p className="text-gray-600 max-w-md">
-            We couldn&apos;t load the analysis for this category.
+            Nismo uspeli da učitamo analizu za ovu kategoriju.
           </p>
 
 
@@ -30,7 +30,7 @@ const AnalysisError = () => {
           color='inherit'
 
         >
-          Go home
+          Na početnu stranu
         </Button>
       </div>
     </div>

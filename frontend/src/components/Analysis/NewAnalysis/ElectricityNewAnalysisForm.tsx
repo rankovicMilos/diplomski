@@ -31,25 +31,25 @@ const ElectricityNewAnalysisForm = () => {
 
   const [crops, setCrops] = useState([
     {
-      label: "Hydro",
+      label: "Hidroelektrane",
       name: "hydro",
       isSelected: true,
       revenue_pct: 25
     },
     {
-      label: "Coal",
+      label: "Ugalj",
       name: "coal",
       isSelected: true,
       revenue_pct: 25
     },
     {
-      label: "Wind",
+      label: "Vetar",
       name: "wind",
       isSelected: true,
       revenue_pct: 25
     },
     {
-      label: "Solar",
+      label: "Sunce",
       name: "solar",
       isSelected: true,
       revenue_pct: 25
@@ -110,7 +110,7 @@ const ElectricityNewAnalysisForm = () => {
           (error as { code?: string }).code === 'ECONNABORTED'
         );
         if (isTimeoutError) {
-          setTimeoutError('Market position generation timed out');
+          setTimeoutError('Isteklo je vreme za generisanje tržišne pozicije');
         } else {
           setError((error as Error).message);
         }
@@ -148,20 +148,20 @@ const ElectricityNewAnalysisForm = () => {
 
   if (showAnalysisGenerated) return (
     <div>
-      <h2>Report generated! :)</h2>
+      <h2>Izveštaj je generisan! :)</h2>
     </div>
   )
 
   if (error) return (
     <div>
       <p className="text-red-100 mb-4">{error}</p>
-      <p>Please try again later</p>
+      <p>Pokušajte ponovo kasnije</p>
     </div>
   )
 
   if (timeoutError) return (
     <div>
-      <h2>This action took longer than expected, please return to the home page or try again</h2>
+      <h2>Radnja je trajala duže od očekivanog. Vratite se na početnu stranu ili pokušajte ponovo</h2>
     </div>
   )
 
@@ -170,18 +170,18 @@ const ElectricityNewAnalysisForm = () => {
       <div className="flex flex-col gap-3">
 
         <div className="grid grid-cols-6 gap-x-2 gap-y-6">
-          <TextField value={companyName} onChange={(e) => setCompanyName(e.target.value)} size="small" label="Company name" className="col-span-5" required />
+          <TextField value={companyName} onChange={(e) => setCompanyName(e.target.value)} size="small" label="Naziv preduzeća" className="col-span-5" required />
           <Select value={curreny} onChange={(e) => setCurrency(e.target.value)} size="small" className="col-span-1">
             {currencyOptions.map(currencyOption => <MenuItem key={currencyOption} value={currencyOption}>{currencyOption}</MenuItem>)}
           </Select>
-          <TextField value={totalRevenue} onChange={(e) => setTotalRevenue(e.target.value)} type="number" size="small" label={`Total revenue (${curreny})`} className="col-span-6" slotProps={{ htmlInput: { min: 0 } }} required />
-          <TextField value={rateEurDin} onChange={(e) => setRateEurDin(e.target.value)} type="number" size="small" label="Rate EUR-DIN" className="col-span-2" required />
-          <TextField value={rateDate} onChange={(e) => setRateDate(e.target.value)} type="date" size="small" label="Rate date" className="col-span-2" required />
+          <TextField value={totalRevenue} onChange={(e) => setTotalRevenue(e.target.value)} type="number" size="small" label={`Ukupan prihod (${curreny})`} className="col-span-6" slotProps={{ htmlInput: { min: 0 } }} required />
+          <TextField value={rateEurDin} onChange={(e) => setRateEurDin(e.target.value)} type="number" size="small" label="Kurs EUR/RSD" className="col-span-2" required />
+          <TextField value={rateDate} onChange={(e) => setRateDate(e.target.value)} type="date" size="small" label="Datum kursa" className="col-span-2" required />
         </div>
       </div>
 
       <div className="flex flex-col gap-3">
-        <h5 className="text-md font-semibold">Commodities: </h5>
+        <h5 className="text-md font-semibold">Proizvodi: </h5>
         {crops.map((crop) => (
           <div key={crop.name} className="flex gap-3 items-center">
             <Checkbox checked={crop.isSelected} onChange={() => toggleCropSelected(crop.name)} />
@@ -208,12 +208,12 @@ const ElectricityNewAnalysisForm = () => {
         ))}
         {!isRevenueValid && (
           <p className="text-red-100 text-xs">
-            Total revenue percentage must be between values 0 and 100 (current: {selectedCropsRevenueTotal}%)
+            Zbir procenata učešća u prihodima mora biti veći od 0 i najviše 100 (trenutno: {selectedCropsRevenueTotal}%)
           </p>
         )}
       </div>
 
-      <Button onClick={onSubmit} loading={isPending} disabled={!isFormValid}>Generate UAF</Button>
+      <Button onClick={onSubmit} loading={isPending} disabled={!isFormValid}>Generiši UAF</Button>
     </>
   )
 }

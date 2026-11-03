@@ -15,18 +15,18 @@ const CommodityEstimateTable = ({ estimated_volume, market_share }: CommodityEst
 
   return (
     <table className='w-[80%] mt-4'>
-      <caption className="text-start text-2xs">Volume & Market Share Estimation</caption>
+      <caption className="text-start text-2xs">Procena obima i tržišnog udela</caption>
       <thead className="bg-teal-40 font-bold text-sm">
         <tr>
           <th>Scenario</th>
-          <th>Estimated Volume</th>
-          <th>Market Share</th>
+          <th>Procenjeni obim</th>
+          <th>Tržišni udeo</th>
         </tr>
       </thead>
       <tbody className="text-xs even:[&>tr]:bg-teal-10">
         <tr>
           <td>
-            Low Estimate
+            Niska procena
           </td>
           <td>
             {estimated_volume?.low_estimate_tonnes?.toLocaleString()}
@@ -37,7 +37,7 @@ const CommodityEstimateTable = ({ estimated_volume, market_share }: CommodityEst
         </tr>
         <tr>
           <td>
-            Mid Estimate
+            Srednja procena
           </td>
           <td>
             {estimated_volume?.mid_estimate_tonnes?.toLocaleString()}
@@ -48,7 +48,7 @@ const CommodityEstimateTable = ({ estimated_volume, market_share }: CommodityEst
         </tr>
         <tr>
           <td>
-            High Estimate
+            Visoka procena
           </td>
           <td>
             {estimated_volume?.high_estimate_tonnes?.toLocaleString()}

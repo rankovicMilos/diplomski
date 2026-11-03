@@ -22,56 +22,56 @@ export type Industry = {
 const industries: Industry[] = [
   {
     id: "cereals",
-    name: "Cereals",
+    name: "Žitarice",
     naceCodes: ["A1.11"],
     analysisCategory: "A1.11 Growing of cereals, other than rice, leguminous crops and oil seeds (en)",
     sections: []
   },
   {
     id: "paper_packaging",
-    name: "Paper packaging",
+    name: "Papirna ambalaža",
     naceCodes: ["C17.21"],
     sections: []
   },
   {
     id: "fuel",
-    name: "Fuel",
+    name: "Gorivo",
     naceCodes: ["C19.20"],
     sections: []
   },
   {
     id: "fertilizers",
-    name: "Fertilizers",
+    name: "Đubriva",
     naceCodes: ["C20.15"],
     sections: []
   },
   {
     id: "pharmaceuticals",
-    name: "Pharmaceuticals",
+    name: "Farmaceutika",
     naceCodes: ["C21.20"],
     sections: []
   },
   {
     id: "plastic_packaging",
-    name: "Plastic packaging",
+    name: "Plastična ambalaža",
     naceCodes: ["C22.22"],
     sections: []
   },
   {
     id: "steel",
-    name: "Steel",
+    name: "Čelik",
     naceCodes: ["C24.10"],
     sections: []
   },
   {
     id: "electricity",
-    name: "Electricity",
+    name: "Električna energija",
     naceCodes: ["D35.10", "D35.11", "D35.12", "D35.13", "D35.14", "D35.15", "D35.16", "D35.40"],
     analysisCategory: "electricity",
     sections: [
       {
         id: "market_analysis",
-        title: "Market Analysis",
+        title: "Analiza tržišta",
         subsections: [
           "Uvodni pasus",
           "Grafik proizvodnje 2010–2024",
@@ -83,7 +83,7 @@ const industries: Industry[] = [
       },
       {
         id: "price_analysis",
-        title: "Price Analysis",
+        title: "Analiza cena",
         subsections: [
           "Electricity price statistics",
         ]
@@ -92,19 +92,19 @@ const industries: Industry[] = [
   },
   {
     id: "construction",
-    name: "Construction",
+    name: "Građevinarstvo",
     naceCodes: ["F41"],
     sections: []
   },
   {
     id: "retail_wholesale",
-    name: "Retail & wholesale",
+    name: "Trgovina na malo i veliko",
     naceCodes: ["G46", "G47"],
     sections: []
   },
   {
     id: "telecom",
-    name: "Telecom",
+    name: "Telekomunikacije",
     naceCodes: ["K26.30", "K27.30", "K27.31", "K27.32", "K27.33", "K61.00", "K61.10", "K61.90"],
     sections: []
   },
@@ -116,7 +116,7 @@ const industries: Industry[] = [
   },
   {
     id: "real_estate",
-    name: "Real estate",
+    name: "Nekretnine",
     naceCodes: ["L68"],
     sections: []
   },

@@ -7,17 +7,17 @@ const useClientPositionQuery = (marketPositionId: string) =>
 		queryFn: async () => {
 			try {
 
-        if (!marketPositionId) throw new Error('Market position is required')
+        if (!marketPositionId) throw new Error('Potrebna je tržišna pozicija')
 
 				const res = await getClientAnalysis(marketPositionId);
 				
 				if (res.status === 200) return res
 
-				throw new Error("Failed to fetch client position")
+				throw new Error("Neuspelo preuzimanje pozicije klijenta")
 
 				} catch (error) {
 
-					throw new Error(error instanceof Error ? error.message : 'An unknown error occurred')
+					throw new Error(error instanceof Error ? error.message : 'Došlo je do nepoznate greške')
 				}
 
 		},

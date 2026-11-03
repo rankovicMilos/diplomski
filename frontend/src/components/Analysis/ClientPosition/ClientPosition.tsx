@@ -25,7 +25,7 @@ const ClientPosition = () => {
   const analysisCategory = getIndustriesForNaceCode(naceCode).find(industry => industry.analysisCategory)?.analysisCategory;
   const { data: marketAnalysisData } = useAnalysisQuery(analysisCategory ?? "", { enabled: !!analysisCategory });
 
-  if (!marketPositionId) return <p>Market position id is required</p>
+  if (!marketPositionId) return <p>Potreban je identifikator tržišne pozicije</p>
 
 
   const clientPositionReport = data?.data;
@@ -67,7 +67,7 @@ const ClientPosition = () => {
           disabled={isGenerating}
 
         >
-          {isGenerating ? 'Generating...' : 'Download as Word'}
+          {isGenerating ? 'Generisanje...' : 'Preuzmi kao Word'}
         </Button>
       </div>
 
@@ -77,7 +77,7 @@ const ClientPosition = () => {
 
       {peerAnalysis ?
         <PeerAnalysis peerAnalysis={peerAnalysis} /> :
-        <p>Peer analysis is still generating or something went wrong</p>
+        <p>Uporedna analiza se još generiše ili je došlo do greške</p>
       }
 
     </div>

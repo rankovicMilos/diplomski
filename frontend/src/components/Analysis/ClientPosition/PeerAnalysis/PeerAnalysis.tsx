@@ -26,16 +26,16 @@ const PeerAnalysis = ({ peerAnalysis }: PeerAnalysisProps) => {
         <h3 className="text-md">{peerAnalysis.sector}</h3>
 
         <p>
-          <strong>Country: </strong>
+          <strong>Država: </strong>
           {peerAnalysis?.country}
         </p>
         <p>
-          <strong>Data period: </strong>
+          <strong>Period podataka: </strong>
           {peerAnalysis?.data_period}
         </p>
 
         <p>
-          <strong>Currency: </strong>
+          <strong>Valuta: </strong>
           {peerAnalysis?.currency}
         </p>
 
@@ -43,7 +43,7 @@ const PeerAnalysis = ({ peerAnalysis }: PeerAnalysisProps) => {
 
       <div className="flex flex-col gap-2">
 
-        <h5 className="mb-0 text-xs">Companies analyzed:</h5>
+        <h5 className="mb-0 text-xs">Analizirana preduzeća:</h5>
         <ul className={cn(
           "flex flex-col w-[60%]",
           "[&>li]:flex [&>li]:justify-between [&>li]:border-b-1 [&>li]:border-steel-75 [&>li]:py-2 [&>li]:px-2 odd:[&>li]:bg-teal-10"
@@ -57,9 +57,9 @@ const PeerAnalysis = ({ peerAnalysis }: PeerAnalysisProps) => {
       {/* key metrics */}
       {Object.values(peerAnalysis.key_metrics_comparison).map((metric, index) => (
         <div className="flex flex-col gap-2" key={metric.metric_name_en}>
-          <h5 className="mb-0 text-xs">{metric.metric_name_en} market share:</h5>
+          <h5 className="mb-0 text-xs">Tržišni udeo ({metric.metric_name_en}):</h5>
           <KeyMetricsTable companies={metric.companies} />
-          <p><strong>Industry total: </strong>{metric.industry_total} rsd</p>
+          <p><strong>Ukupno za industriju: </strong>{metric.industry_total} RSD</p>
 
           {index !== 5 && <Divider />}
         </div>
@@ -96,7 +96,7 @@ const PeerAnalysis = ({ peerAnalysis }: PeerAnalysisProps) => {
 
       {/* limitations */}
       <div>
-        <h4 className="font-semibold text-teal-100">Limitations:</h4>
+        <h4 className="font-semibold text-teal-100">Ograničenja:</h4>
         <ol className="list-disc mx-4 my-2">
           {peerAnalysis.limitations.map(limitation => <li key={limitation}>{limitation}</li>)}
         </ol>

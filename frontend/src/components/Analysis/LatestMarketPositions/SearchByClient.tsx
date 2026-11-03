@@ -14,7 +14,7 @@ const SearchByClient = () => {
 
   return (
     <form onSubmit={onSubmit}>
-      <TextField value={clientNameState} onChange={e => setClientNameState(e.target.value)} size="small" label="Client name" />
+      <TextField value={clientNameState} onChange={e => setClientNameState(e.target.value)} size="small" label="Naziv klijenta" />
     </form>
   )
 }

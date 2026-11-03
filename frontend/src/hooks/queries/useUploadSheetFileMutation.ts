@@ -11,7 +11,7 @@ const useUploadSheetFileMutation = () =>
 		mutationFn: async ({ fileName, base64 }: UploadSheetFileParams) => {
 			const res = await uploadSheetFile(fileName, base64);
 			if (res.status === 200) return res;
-			throw new Error("Failed to upload sheet file");
+			throw new Error("Neuspelo otpremanje Excel datoteke");
 		},
 		retry: false,
 	});

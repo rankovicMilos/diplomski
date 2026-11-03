@@ -31,7 +31,7 @@ const MarketAnalysisTable = ({ table }: MarketAnalysisTableProps) => {
         <thead>
           <tr className="bg-teal-90 text-sm">
             <th rowSpan={2} className="align-bottom">
-              Crop
+              Usev
             </th>
             {years.map(year =>
               (<th key={year} colSpan={3}>{year}</th>)

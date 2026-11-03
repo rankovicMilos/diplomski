@@ -11,11 +11,11 @@ const useMarketPositionsQuery = ({clientName, category}: GetMarketPositionsQuery
 				
 				if (res.status === 200) return res
 
-				throw new Error("Failed to fetch market position")
+				throw new Error("Neuspelo preuzimanje tržišne pozicije")
 
 				} catch (error) {
 
-					throw new Error(error instanceof Error ? error.message : 'An unknown error occurred')
+					throw new Error(error instanceof Error ? error.message : 'Došlo je do nepoznate greške')
 				}
 
 		},

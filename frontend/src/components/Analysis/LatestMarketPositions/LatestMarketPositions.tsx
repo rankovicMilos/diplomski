@@ -33,7 +33,7 @@ const LatestMarketPositions = () => {
       {getIndustriesForNaceCode(category).map(industry => (
         <Link key={industry.id} href={`/analysis/marketAnalysis?industry=${industry.id}`}
           className='flex gap-1 items-center'>
-          Go to {industry.name} market analysis
+          Idi na tržišnu analizu: {industry.name}
           <Launch sx={{ fontSize: 17 }} />
         </Link>
       ))}
@@ -44,7 +44,7 @@ const LatestMarketPositions = () => {
             <div className="flex gap-4 align-center text-charcoal-80">
               <div className="text-xs flex items-center gap-4">
                 <div className="flex items-center gap-1">
-                  <CalendarToday sx={{ fontSize: 14 }} /> {new Date(analysis.last_modified).toDateString()} {new Date(analysis.last_modified).toLocaleTimeString()}
+                  <CalendarToday sx={{ fontSize: 14 }} /> {new Date(analysis.last_modified).toLocaleDateString('sr-Latn-RS')} {new Date(analysis.last_modified).toLocaleTimeString('sr-Latn-RS')}
                 </div>
 
                 {analysis.content.nace_code &&
@@ -58,8 +58,8 @@ const LatestMarketPositions = () => {
         </div>
       ))}
       {files.length === 0 && <div className="text-center flex flex-col gap-3">
-        <h3>No results</h3>
-        <p>Please try another client name or category</p>
+        <h3>Nema rezultata</h3>
+        <p>Pokušajte sa drugim nazivom klijenta ili kategorijom</p>
       </div>}
     </div>
   )

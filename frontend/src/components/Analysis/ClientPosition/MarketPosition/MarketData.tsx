@@ -47,12 +47,12 @@ const MarketData = ({ market_data }: MarketDataProps) => {
 
   // The LLM returns null for values it couldn't find
   const formatNumber = (num: number | null) => {
-    if (num === null || num === undefined) return 'N/A';
+    if (num === null || num === undefined) return 'N/D';
     return new Intl.NumberFormat('en-US').format(num);
   };
 
   const formatCurrency = (num: number | null) => {
-    if (num === null || num === undefined) return 'N/A';
+    if (num === null || num === undefined) return 'N/D';
     if (num >= 1e9) {
       return (num / 1e9).toFixed(1) + 'B';
     }
@@ -67,31 +67,31 @@ const MarketData = ({ market_data }: MarketDataProps) => {
 
   return (
     <div className="flex flex-col gap-2 my-6">
-      <h5>Market Overview</h5>
+      <h5>Pregled tržišta</h5>
 
       <div className="flex gap-4">
 
         {/* total production */}
         <DataCard
-          title="Total production"
+          title="Ukupna proizvodnja"
           icon={<Inventory2Outlined />}
           value={formatNumber(market_data.total_production_tonnes)}
-          label="tonnes"
+          label="tona"
           className="bg-teal-10 border-teal-90"
 
         />
 
         {/* harvested area */}
         <DataCard
-          title="Harvested area"
+          title="Požnjevena površina"
           icon={<MapOutlined />}
           value={formatNumber(market_data.harvested_area_ha)}
-          label="hectares"
+          label="hektara"
           className="bg-yellow-10 border-yellow-90" />
 
         {/* Yield per hectare */}
         <DataCard
-          title="Yield per Hectare"
+          title="Prinos po hektaru"
           icon={<TrendingUpOutlined />}
           value={formatNumber(market_data.yield_per_ha)}
           label="tonnes/ha"
@@ -99,7 +99,7 @@ const MarketData = ({ market_data }: MarketDataProps) => {
 
         {/* Total market value */}
         <DataCard
-          title="Total Market value"
+          title="Ukupna vrednost tržišta"
           icon={<MonetizationOnOutlined />}
           value={`${formatCurrency(market_data.total_market_value.value)} ${market_data.total_market_value.unit}`}
           label={formatNumber(market_data.total_market_value.value)}
@@ -114,7 +114,7 @@ const MarketData = ({ market_data }: MarketDataProps) => {
           <InsightsOutlined />
           <div className="flex flex-col">
             <span className="text-sm">
-              Price analysis
+              Analiza cena
             </span>
             <span className="text-2xs">
               {market_data.price_data.price_unit}
@@ -123,18 +123,18 @@ const MarketData = ({ market_data }: MarketDataProps) => {
         </div>
 
         <div className="text-center my- flex flex-col">
-          <span>Average price</span>
+          <span>Prosečna cena</span>
           <span className="text-3xl">{formatNumber(market_data.price_data.average_price)}</span>
           <span className="text-xs">{market_data.price_data.price_unit}</span>
         </div>
 
         {hasPriceRange && <div className="bg-steel-50 rounded-md px-6 py-2">
           <div className="flex justify-between text-xs mb-2">
-            <span className="text-gray-600">Low</span>
-            <span className="text-gray-600">High</span>
+            <span className="text-gray-600">Niska</span>
+            <span className="text-gray-600">Visoka</span>
           </div>
           <Slider
-            aria-label="Price data"
+            aria-label="Podaci o ceni"
             value={average_price}
             min={price_range_low}
             max={price_range_high}

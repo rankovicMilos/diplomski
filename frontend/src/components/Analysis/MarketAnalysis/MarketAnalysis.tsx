@@ -55,12 +55,12 @@ const MarketAnalysis = ({ category, title = category, newAnalysisHref = "/analys
       <div className='flex flex-col gap-1.5'>
         <div className="flex justify-between items-center">
           <p>
-            Selected Market Analysis:
+            Izabrana tržišna analiza:
           </p>
           <div className='flex flex-col gap-2'>
 
             <Link href={newAnalysisHref} prefetch={false}>
-              Generate New UAF
+              Generiši novi UAF
             </Link>
             <Button
               variant="contained"
@@ -70,18 +70,18 @@ const MarketAnalysis = ({ category, title = category, newAnalysisHref = "/analys
               disabled={isGenerating}
 
             >
-              {isGenerating ? 'Generating...' : 'Download as Word'}
+              {isGenerating ? 'Generisanje...' : 'Preuzmi kao Word'}
             </Button>
           </div>
         </div>
         <h1>
           {title}
         </h1>
-        <h3 className="text-md">Market and Price Analysis Report</h3>
+        <h3 className="text-md">Izveštaj o analizi tržišta i cena</h3>
 
         <p>
-          <strong>Date generated: </strong>
-          {new Date(analysis.generated_at).toLocaleDateString()}
+          <strong>Datum generisanja: </strong>
+          {new Date(analysis.generated_at).toLocaleDateString('sr-Latn-RS')}
         </p>
 
         <p>
@@ -90,12 +90,12 @@ const MarketAnalysis = ({ category, title = category, newAnalysisHref = "/analys
         </p>
 
         <p>
-          <strong>Country: </strong>
+          <strong>Država: </strong>
           {analysis.meta.country}
         </p>
 
         <p>
-          <strong>Sector: </strong>
+          <strong>Sektor: </strong>
           {analysis.meta.sector}
         </p>
       </div>
@@ -132,7 +132,7 @@ const MarketAnalysis = ({ category, title = category, newAnalysisHref = "/analys
 
       <Divider />
 
-      <h4 className="font-semibold text-teal-100">Sources:</h4>
+      <h4 className="font-semibold text-teal-100">Izvori:</h4>
       <ol className="list-disc mx-4 my-2 [&>li]:text-xs">
         {analysis.sources.map(source => <li key={source.name}>{source.name} {source.date}</li>)}
       </ol>

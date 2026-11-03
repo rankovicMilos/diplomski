@@ -8,7 +8,7 @@ const Header = () => {
       <Link href="/">
         <Image
           src={logo}
-          alt="Sector Risk Analysis"
+          alt="Analiza sektorskog rizika"
           height={40}
           priority
         />

@@ -7,7 +7,7 @@ type MarketPositionAnalysisProps = {
 const MarketPositionAnalysis = ({ methodology, assumptions }: MarketPositionAnalysisProps) => (
   <div className="flex flex-col gap-2 my-3">
 
-    <h4 className="font-semibold text-teal-100">Market position analysis:</h4>
+    <h4 className="font-semibold text-teal-100">Analiza tržišne pozicije:</h4>
 
     <div>
       <p>{methodology}</p>

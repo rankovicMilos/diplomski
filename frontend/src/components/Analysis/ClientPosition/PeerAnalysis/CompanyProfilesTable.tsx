@@ -28,16 +28,16 @@ const CompanyProfilesTable = ({ companies }: CompanyProfilesTableProps) => {
   return (
     <div className="flex flex-col gap-2">
 
-      <h4 className="font-semibold text-teal-100">Company Financial Comparison</h4>
+      <h4 className="font-semibold text-teal-100">Finansijsko poređenje preduzeća</h4>
       <table className='w-[95%] mb-2'>
         <thead className="bg-teal-40 font-bold text-sm">
           <tr>
-            <th>Company</th>
-            <th>Total assets</th>
-            <th>Total Revenue</th>
-            <th>Op. Margin</th>
-            <th>Asset Turn.</th>
-            <th>Goods %</th>
+            <th>Preduzeće</th>
+            <th>Ukupna aktiva</th>
+            <th>Ukupni prihodi</th>
+            <th>Oper. marža</th>
+            <th>Obrt aktive</th>
+            <th>Udeo robe %</th>
           </tr>
         </thead>
         <tbody className="text-xs even:[&>tr]:bg-teal-10">

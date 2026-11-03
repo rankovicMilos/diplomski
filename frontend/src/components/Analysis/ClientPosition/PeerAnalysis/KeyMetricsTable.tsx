@@ -15,10 +15,10 @@ const KeyMetricsTable = ({ companies }: KeyMetricsTableProps) => {
     <table className='w-[95%] mb-2'>
       <thead className="bg-teal-40 font-bold text-sm">
         <tr>
-          <th>Company</th>
-          <th>Total assets (RSD)</th>
-          <th>Market Share</th>
-          <th>Rank</th>
+          <th>Preduzeće</th>
+          <th>Ukupna aktiva (RSD)</th>
+          <th>Tržišni udeo</th>
+          <th>Rang</th>
         </tr>
       </thead>
       <tbody className="text-xs even:[&>tr]:bg-teal-10">

@@ -6,7 +6,7 @@ const useGenerateMarketPositionMutation = () =>
 		mutationFn: async (body: MarketPositionRequestBody) => {
 			const res = await generateMarketPosition(body);
 			if (res.status === 200 || res.status === 504) return res;
-			throw new Error(`Failed to generate market position: ${res.data?.error}`);
+			throw new Error(`Neuspelo generisanje tržišne pozicije: ${res.data?.error}`);
 		},
 		retry: false,
 	});

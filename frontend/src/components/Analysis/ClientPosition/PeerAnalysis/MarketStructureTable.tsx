@@ -86,8 +86,8 @@ const MarketStructureTable = ({ metrics }: MarketStructureTable) => {
     <table className='w-[60%] mb-2'>
       <thead className="bg-teal-40 font-bold text-sm">
         <tr>
-          <th className="text-start">Metric</th>
-          <th>Industry total</th>
+          <th className="text-start">Pokazatelj</th>
+          <th>Ukupno za industriju</th>
         </tr>
       </thead>
       <tbody className="text-xs even:[&>tr]:bg-teal-10">
