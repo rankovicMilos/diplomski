@@ -5,7 +5,7 @@ This is the main entry point that routes requests to appropriate handlers.
 Supports three analysis types:
 - market_analysis: Crop market and price analysis (RAG)
 - peer_analysis: Multi-company financial peer comparison (generate-only, CSV input)
-- market_position: Client market position analysis (generate-only, PDF input)
+- market_position: Client market position analysis (generate-only, analyst inputs)
 """
 import logging
 from datetime import datetime, timezone
@@ -26,7 +26,6 @@ __all__ = [
 ]
 
 from src.config.settings import (
-    CLIENT_DATA_BUCKET,
     MARKET_ANALYSIS_BUCKET,
     PEER_DATA_BUCKET,
     DEFAULT_CROPS,
@@ -37,6 +36,7 @@ from src.config.settings import (
 from src.config.prompts import (
     MARKET_ANALYSIS_SYSTEM_PROMPT,
     MARKET_POSITION_PROMPT,
+    build_market_position_context,
     build_peer_analysis_prompt,
     build_industry_market_analysis_prompt,
     format_period,
@@ -356,23 +356,33 @@ def handle_market_position(event: dict, context) -> dict:
     """
     Handle market position analysis request.
 
+    The client part of the report is built only from the analyst's inputs: total_revenue,
+    commodities (with revenue shares), primary_currency and the EUR/RSD rate. The market part
+    is the market analysis report (market_analysis_key, or the latest one for the client's
+    industry).
+
     Args:
-        event: Lambda event with client_data_key, market_analysis_key (optional)
+        event: Lambda event with total_revenue, commodities, primary_currency,
+            fx_rate_eur_rsd, fx_rate_date, nace_code, market_analysis_key (optional)
         context: Lambda context
 
     Returns:
         HTTP response dict
     """
-    client_data_key = event.get("client_data_key")
     market_analysis_key = event.get("market_analysis_key")
     nace_code = event.get("nace_code", "A1.11")
-    client_name = event.get("client_name")  # Optional override for model extraction
+    client_name = event.get("client_name")
     analysis_id = event.get("analysis_id")  # Optional UUID from FE for custom file naming
 
     total_revenue = event.get("total_revenue")
+    commodities = event.get("commodities")
+    primary_currency = event.get("primary_currency") or "RSD"
+    fx_rate_eur_rsd = event.get("fx_rate_eur_rsd")
+    fx_rate_date = event.get("fx_rate_date")
 
-    if not client_data_key and total_revenue is None:
-        return validation_error("total_revenue (or client_data_key) is required for market_position")
+    error = _market_position_input_error(total_revenue, commodities)
+    if error:
+        return validation_error(error)
 
     # Auto-select latest market analysis if not provided: the client's industry first
     # (industry_analysis/<industry>/), then the published market_analysis/ reports
@@ -392,102 +402,24 @@ def handle_market_position(event: dict, context) -> dict:
         market_analysis_key = files[0]["key"]
         logger.info(f"Auto-selected latest market analysis: {market_analysis_key}")
 
-    # Multi-commodity support (new) or single commodity (legacy)
-    commodities = event.get("commodities")
-    primary_commodity = event.get("commodity", "wheat")  # Legacy fallback
-    primary_currency = event.get("primary_currency", "RSD")
-    fx_rate_eur_rsd = event.get("fx_rate_eur_rsd")
-    fx_rate_date = event.get("fx_rate_date")
+    logger.info(
+        "Generating market position: market_analysis=%s, total_revenue=%s %s, commodities=%s, "
+        "fx_rate_eur_rsd=%s, fx_rate_date=%s",
+        market_analysis_key, total_revenue, primary_currency,
+        ", ".join(f"{c['name']} ({c['revenue_pct']}%)" for c in commodities),
+        fx_rate_eur_rsd, fx_rate_date,
+    )
 
-    # Format commodities for logging and prompt
-    if commodities:
-        commodities_str = ", ".join([f"{c['name']} ({c['revenue_pct']}%)" for c in commodities])
-        logger.info(
-            "Generating market position analysis with client_data=%s, market_analysis=%s, "
-            "commodities=%s, primary_currency=%s",
-            client_data_key, market_analysis_key, commodities_str, primary_currency,
-        )
-    else:
-        logger.info(
-            "Generating market position analysis with client_data=%s, market_analysis=%s, "
-            "fx_rate_eur_rsd=%s, fx_rate_date=%s, primary_commodity=%s, primary_currency=%s",
-            client_data_key, market_analysis_key, fx_rate_eur_rsd, fx_rate_date,
-            primary_commodity, primary_currency,
-        )
-
-    # Read market analysis
     market_analysis = storage.read_file(MARKET_ANALYSIS_BUCKET, market_analysis_key)
-
-    # Build PARAMETERS block with multi-commodity support
-    if commodities:
-        # Format example: "wheat: 60%, corn: 40%"
-        commodities_formatted = "\n".join([
-            f"  - {c['name']}: {c['revenue_pct']}% of revenue"
-            for c in commodities
-        ])
-        parameters_block = (
-            "=== PARAMETERS ===\n"
-            f"commodities (with estimated revenue share):\n{commodities_formatted}\n"
-            f"primary_currency: {primary_currency}\n"
-            f"total_revenue: {total_revenue if total_revenue is not None else 'null'}\n"
-            f"fx_rate_eur_rsd: {fx_rate_eur_rsd if fx_rate_eur_rsd is not None else 'null'}\n"
-            f"fx_rate_date: {fx_rate_date if fx_rate_date is not None else 'null'}\n\n"
-            "IMPORTANT: Calculate weighted market position based on revenue percentages.\n"
-            "For each commodity, estimate the client's market share, then calculate\n"
-            "the weighted average market position using the revenue percentages above.\n\n"
-        )
-    else:
-        # Legacy single commodity
-        parameters_block = (
-            "=== PARAMETERS ===\n"
-            f"primary_commodity: {primary_commodity}\n"
-            f"primary_currency: {primary_currency}\n"
-            f"total_revenue: {total_revenue if total_revenue is not None else 'null'}\n"
-            f"fx_rate_eur_rsd: {fx_rate_eur_rsd if fx_rate_eur_rsd is not None else 'null'}\n"
-            f"fx_rate_date: {fx_rate_date if fx_rate_date is not None else 'null'}\n\n"
-        )
-
-    # Check if client data is absent, PDF or markdown
-    if not client_data_key:
-        logger.info("No client data file, using total_revenue only")
-        combined_context = (
-            f"{parameters_block}"
-            "<<<MARKET_ANALYSIS_JSON>>>\n"
-            f"{market_analysis}\n"
-            "<<<END_MARKET_ANALYSIS_JSON>>>"
-        )
-        response = llm_service.generate_only(combined_context, MARKET_POSITION_PROMPT)
-    elif client_data_key.lower().endswith(".pdf"):
-        logger.info("Using PDF document flow for client data")
-        client_pdf_bytes = storage.read_pdf(CLIENT_DATA_BUCKET, client_data_key)
-
-        pdf_context = (
-            f"{parameters_block}"
-            "<<<MARKET_ANALYSIS_JSON>>>\n"
-            f"{market_analysis}\n"
-            "<<<END_MARKET_ANALYSIS_JSON>>>"
-        )
-
-        response = llm_service.generate_with_pdf(
-            client_pdf_bytes,
-            pdf_context,
-            MARKET_POSITION_PROMPT
-        )
-    else:
-        logger.info("Using markdown text flow for client data")
-        client_data = storage.read_file(CLIENT_DATA_BUCKET, client_data_key)
-
-        combined_context = (
-            f"{parameters_block}"
-            "<<<CLIENT_KEY_FINANCIALS_MD>>>\n"
-            f"{client_data}\n"
-            "<<<END_CLIENT_KEY_FINANCIALS_MD>>>\n\n"
-            "<<<MARKET_ANALYSIS_JSON>>>\n"
-            f"{market_analysis}\n"
-            "<<<END_MARKET_ANALYSIS_JSON>>>"
-        )
-
-        response = llm_service.generate_only(combined_context, MARKET_POSITION_PROMPT)
+    user_context = build_market_position_context(
+        total_revenue=total_revenue,
+        commodities=commodities,
+        primary_currency=primary_currency,
+        fx_rate_eur_rsd=fx_rate_eur_rsd,
+        fx_rate_date=fx_rate_date,
+        market_analysis=market_analysis,
+    )
+    response = llm_service.generate_only(user_context, MARKET_POSITION_PROMPT)
 
     logger.info("Received response from Claude (generate-only mode)")
 
@@ -531,6 +463,23 @@ def handle_market_position(event: dict, context) -> dict:
     return success_response(result, methods="POST, OPTIONS")
 
 
+def _market_position_input_error(total_revenue, commodities) -> str | None:
+    """Validation message for the analyst's inputs, or None if they are usable."""
+    if isinstance(total_revenue, bool) or not isinstance(total_revenue, (int, float)) or total_revenue <= 0:
+        return "total_revenue must be a positive number"
+    if not isinstance(commodities, list) or not commodities:
+        return "commodities must be a non-empty list of {name, revenue_pct}"
+    for c in commodities:
+        if not isinstance(c, dict) or not c.get("name"):
+            return "every commodity needs a name"
+        pct = c.get("revenue_pct")
+        if isinstance(pct, bool) or not isinstance(pct, (int, float)) or not 0 < pct <= 100:
+            return f"revenue_pct of '{c['name']}' must be between 0 and 100"
+    if sum(c["revenue_pct"] for c in commodities) > 100:
+        return "revenue_pct of all commodities must add up to at most 100"
+    return None
+
+
 # Analysis type to handler mapping
 ANALYSIS_HANDLERS = {
     "market_analysis": handle_market_analysis,
@@ -569,13 +518,15 @@ def lambda_handler(event: dict, context) -> dict:
     Expected event structure for market_position:
     {
         "analysis_type": "market_position",
-        "client_data_key": "client_data/client_data.pdf",
+        "total_revenue": 165901000,
         "market_analysis_key": "market_analysis/uuid.json",  # Optional - uses latest if omitted
         "commodities": [
             {"name": "wheat", "revenue_pct": 60},
             {"name": "corn", "revenue_pct": 40}
         ],
-        "primary_currency": "RSD"
+        "primary_currency": "RSD",
+        "fx_rate_eur_rsd": 117.2,          # optional
+        "fx_rate_date": "2025-12-31"       # optional
     }
 
     Returns:

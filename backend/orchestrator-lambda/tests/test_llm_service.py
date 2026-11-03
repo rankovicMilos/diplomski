@@ -1,4 +1,3 @@
-import base64
 from types import SimpleNamespace
 
 import pytest
@@ -60,18 +59,6 @@ def test_joins_text_blocks_only(fake_client):
     assert request["messages"] == [{"role": "user", "content": [{"type": "text", "text": "context"}]}]
     assert request["fallbacks"] == "default"
     assert "temperature" not in request
-
-
-def test_pdf_is_sent_as_document_before_text(fake_client):
-    calls = fake_client(message())
-
-    llm_service.generate_with_pdf(b"%PDF-1.4", "params", "system")
-
-    document, text = calls[0]["messages"][0]["content"]
-    assert document["type"] == "document"
-    assert document["source"]["media_type"] == "application/pdf"
-    assert base64.b64decode(document["source"]["data"]) == b"%PDF-1.4"
-    assert text == {"type": "text", "text": "params"}
 
 
 def test_section_context_lists_sources_per_section(fake_client):

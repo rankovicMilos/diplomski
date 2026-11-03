@@ -40,15 +40,19 @@ YAML and retrieval is filtered to its documents. Saved to `industry_analysis/<in
 {"analysis_type": "market_analysis", "industry": "electricity"}
 ```
 
-**Market position:** Claude reads the client PDF. Without `market_analysis_key`, the latest
-analysis of the client's industry (from `nace_code`) is used.
+**Market position:** built only from the analyst's inputs (total revenue, revenue split per
+commodity, currency and EUR/RSD rate) and a market analysis; no client documents are read.
+Without `market_analysis_key`, the latest analysis of the client's industry (from `nace_code`)
+is used.
 ```json
 {
   "analysis_type": "market_position",
-  "client_data_key": "market_position_data/pdf/statements.pdf",
   "nace_code": "D35.14",
-  "commodities": [{"name": "electricity", "revenue_pct": 100}],
-  "primary_currency": "RSD"
+  "total_revenue": 1250000000,
+  "commodities": [{"name": "hydro", "revenue_pct": 60}, {"name": "solar", "revenue_pct": 40}],
+  "primary_currency": "RSD",
+  "fx_rate_eur_rsd": 117.2,
+  "fx_rate_date": "2025-12-31"
 }
 ```
 

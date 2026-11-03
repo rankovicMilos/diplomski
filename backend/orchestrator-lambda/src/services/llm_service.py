@@ -4,7 +4,6 @@ Claude service for report generation via the Anthropic API.
 Every call streams (long JSON reports plus thinking would otherwise risk HTTP timeouts)
 and returns {"output": {"text": ...}}, the shape the handlers and parsers expect.
 """
-import base64
 import logging
 from functools import cache
 from typing import Any
@@ -72,34 +71,6 @@ def generate_only(context: str, system_prompt: str) -> dict[str, Any]:
         Response dict with output.text field
     """
     return _generate([{"type": "text", "text": context}], system_prompt)
-
-
-def generate_with_pdf(
-    pdf_bytes: bytes,
-    context: str,
-    system_prompt: str
-) -> dict[str, Any]:
-    """
-    Generate with a PDF document Claude reads directly (client financial statements).
-
-    Args:
-        pdf_bytes: PDF file contents as bytes
-        context: Additional context text
-        system_prompt: The system prompt for the model
-
-    Returns:
-        Response dict with output.text field
-    """
-    document = {
-        "type": "document",
-        "title": "client_key_financials",
-        "source": {
-            "type": "base64",
-            "media_type": "application/pdf",
-            "data": base64.standard_b64encode(pdf_bytes).decode("ascii"),
-        },
-    }
-    return _generate([document, {"type": "text", "text": context}], system_prompt)
 
 
 def generate_with_section_context(

@@ -446,243 +446,126 @@ def build_peer_analysis_prompt(sector_name: str | None, nace_code: str | None) -
     )
 
 
-MARKET_POSITION_PROMPT = """
-You are a senior credit risk analyst at a bank.
-Your task is to analyze a client's market position within the agricultural commodities sector.
+MARKET_POSITION_PROMPT = """You are a senior credit risk analyst at a bank.
+Your task is to estimate a client's market position from the client's total revenue, the split of
+that revenue across the client's commodities, and a market analysis report of the client's sector.
 
-DOCUMENT INPUT HANDLING
+INPUT
 
-You may receive client financial data in one of two formats:
-1. **PDF Document**: A PDF file attached as a document. If provided:
-   - Focus ONLY on the FIRST PAGE of the PDF.
-   - Extract data from the KEY FINANCIALS section.
-   - Relevant data starts at "KEY FINANCIALS" header.
-   - Relevant data ends at "KF09 CF from Equity Activities".
-   - Ignore all other pages and sections beyond this range.
+You receive two blocks:
 
-2. **Markdown Text**: Text between <<<CLIENT_KEY_FINANCIALS_MD>>> markers.
+1) PARAMETERS - entered by the bank analyst:
+   - total_revenue: the client's total annual revenue, as a full amount (no scale unit applied)
+   - primary_currency: the currency of total_revenue (e.g. RSD)
+   - commodities: the client's commodities (products, crops, generation sources...), each with
+     the estimated share of total_revenue it brings
+   - fx_rate_eur_rsd: 1 EUR = fx_rate_eur_rsd RSD, or null
+   - fx_rate_date: the date of that exchange rate, or null
 
-When a PDF is provided, treat it as the authoritative source for client financial data.
-Extract the YAML-equivalent metadata (client_name, currency, scale_unit, years) from the PDF content.
+2) MARKET ANALYSIS REPORT - JSON between <<<MARKET_ANALYSIS_JSON>>> and <<<END_MARKET_ANALYSIS_JSON>>>:
+   - meta: sector, country and the period the report covers
+   - sections: narrative per report section (content_md, Markdown)
+   - tables: structured data; rows are arrays in the order of "columns". Crop reports have tables
+     like "production_stats" (production, area, yield per year) and "price_history" (prices per
+     period); other industries have tables with Period / Indicator / Value / Unit columns
+   - charts: data points labelled "<Item> <Period>"
+   - sources: the documents the report was built from
 
-You will receive the following input blocks:
+These two blocks are your ONLY source of truth. There is no client financial statement: the
+client's revenue is exactly total_revenue from PARAMETERS.
 
-1) PARAMETERS (plain text key-value pairs)
-2) CLIENT KEY FINANCIALS (Markdown with YAML frontmatter and KEY_FINANCIALS table)
-3) MARKET ANALYSIS REPORT (JSON with market/price/production data)
+METHODOLOGY
 
-The raw input format will look like this:
+Step 1: Analysis year
+- Use the latest year in the market analysis period for which the report has both market volume
+  and price data for the commodities.
+- total_revenue is treated as the client's revenue for that year. State this as an assumption.
 
-=== PARAMETERS ===
-commodities (with estimated revenue share):
-  - wheat: 60% of revenue
-  - corn: 40% of revenue
-primary_currency: <primary currency for market data, e.g. RSD>
-fx_rate_eur_rsd: <numeric or null>
-fx_rate_date: <YYYY-MM-DD or "unknown">
+Step 2: Commodity revenue
+- For EACH commodity: commodity revenue = total_revenue x (revenue_pct / 100), in primary_currency.
+- The revenue shares may add up to less than 100%; the rest of the revenue is not analysed.
 
-IMPORTANT: Calculate weighted market position based on revenue percentages.
-For each commodity, estimate the client's market share, then calculate
-the weighted average market position using the revenue percentages above.
+Step 3: Market data per commodity (from the market analysis report)
+- Total market volume of the commodity in the analysis year (e.g. production in tonnes, generation
+  in GWh). Take it from tables first, then charts, then the narrative.
+- Prices of the commodity in the analysis year: the lowest, the highest and the average of the
+  price values the report gives for that year (if the report gives only one price,
+  low = average = high).
+- For crops also take harvested area (ha) and yield (t/ha), if the report has them.
+- Match commodity names across languages and spellings (e.g. wheat = pšenica = пшеница,
+  corn = maize = kukuruz). If the report has no data for a commodity, its market values are null.
 
-NOTE: If only a single primary_commodity is provided (legacy format), analyze only that commodity.
+Step 4: Units and currency
+- Express price and volume in the same physical unit before dividing: e.g. RSD/kg x 1000 =
+  RSD/t, EUR/MWh x 1000 = EUR/GWh. Converting between multiples of the same unit is allowed.
+- The price currency must equal primary_currency. If the price is in EUR and primary_currency is
+  RSD (or the other way round), convert ONLY with fx_rate_eur_rsd. Any other currency pair, or a
+  missing fx_rate_eur_rsd, cannot be converted: the dependent values are null.
+- Never invent exchange rates, prices or volumes.
 
-<<<CLIENT_KEY_FINANCIALS_MD>>>
-...Markdown with YAML frontmatter and KEY_FINANCIALS table...
-<<<END_CLIENT_KEY_FINANCIALS_MD>>>
+Step 5: Client volume per commodity
+- High volume estimate = commodity revenue / lowest price
+- Mid volume estimate  = commodity revenue / average price
+- Low volume estimate  = commodity revenue / highest price
 
-<<<MARKET_ANALYSIS_JSON>>>
-...JSON market analysis report...
-<<<END_MARKET_ANALYSIS_JSON>>>
+Step 6: Market share per commodity
+- Market share (%) = client volume / total market volume x 100, for the low, mid and high volume.
+- Total market value = total market volume x average price, in primary_currency.
 
-CONTEXT SOURCES
-
-You receive two types of context:
-
-1. CLIENT KEY FINANCIALS DOCUMENT (Markdown with YAML frontmatter):
-   - YAML metadata between --- markers containing: doc_type, client_name, sector, scale_unit, currency, years.
-   - KEY_FINANCIALS table with rows like:
-     - KF01: Total Revenues
-     - KF02: Gross Profit
-     - KF03: EBITDA
-     - KF05: Net Profit / Loss
-   - Values are in the scale_unit specified (e.g., "thousand" means multiply by 1000).
-
-2. MARKET ANALYSIS REPORT (JSON structure):
-   - meta: Contains sector, country, period information.
-   - sections: Array with market_overview and price_analysis narratives (content_md field).
-   - tables: Array of structured data tables:
-     - Table with id="production_stats": Contains Marketing Year, Harvested Area (ha), Production (t), Yield (t/ha).
-     - Table with id="price_history": Contains Period, Price (RSD/kg), Change (%).
-   - charts: Array with price_timeseries and production_trend data points.
-   - sources: Array of source documents with names and dates.
-
-OBJECTIVE
-
-Estimate the client company's share of the total market based on their financial performance and market data.
-When multiple commodities are provided with revenue percentages, calculate market position for EACH commodity
-and provide a weighted overall market position.
-
-METHODOLOGY FOR MARKET SHARE ESTIMATION
-
-Step 0: Identify Commodities and Revenue Split
-- Parse the commodities list from PARAMETERS.
-- Each commodity has an estimated percentage of the client's total revenue.
-- Example: wheat (60%), corn (40%) means 60% of client revenue comes from wheat trading.
-- You will calculate market position for EACH commodity separately, then compute weighted average.
-
-Step 1: Align Analysis Year
-- Determine the analysis period by pairing:
-  - The latest client financial year available, with
-  - The latest marketing year in the market data that is reasonably comparable.
-- Clearly state:
-  - The client financial year used.
-  - The marketing year used for production/market data.
-- If there is any ambiguity in the pairing, choose the most reasonable pairing and explain it in the narrative.
-
-Step 1: Extract Client Revenue Data
-- Parse YAML frontmatter for client_name, currency, scale_unit, and years.
-- From the KEY_FINANCIALS table:
-  - Find KF01 (Total Revenues) for the chosen analysis year.
-- Apply scale_unit to get the actual revenue:
-  - Example: if scale_unit = "thousand" and KF01 = 165,901, then actual revenue = 165,901,000.
-- Identify and report the fiscal years covered and any visible trend in total revenues.
-
-Step 2: Extract Market Data from JSON FOR EACH COMMODITY
-- For EACH commodity in the parameters list (e.g., wheat, corn):
-  - From tables array, find the table with id = "production_stats":
-    - Look for rows where the Crop column matches the commodity name.
-    - Extract total Production (t) for the relevant marketing year for THAT crop.
-    - Extract Harvested Area (ha) and Yield (t/ha) for the same marketing year for THAT crop.
-  - From tables array, find the table with id = "price_history":
-    - Look for rows where the Crop column matches the commodity name.
-    - Extract all price values (RSD/kg) for the relevant period(s) that match the analysis year.
-    - Calculate for EACH commodity:
-      - Minimum price (RSD/kg)
-      - Maximum price (RSD/kg)
-      - Average price (RSD/kg)
-    - Convert these prices to RSD/tonne by multiplying by 1000.
-- From sections, extract qualitative market context relevant to each commodity:
-  - Supply/demand situation per crop.
-  - Price trends per crop.
-  - Competitive dynamics.
-
-Step 3: Estimate Client's Physical Volume PER COMMODITY
-- For EACH commodity in the list:
-  - Calculate commodity-specific revenue = Total Client Revenue × (commodity revenue_pct / 100)
-  - Example: If total revenue = 100M EUR and wheat = 60%, then wheat revenue = 60M EUR
-- If there is a currency mismatch (e.g. client financials in EUR, market data in RSD):
-  - Use ONLY the exchange rate provided in PARAMETERS:
-    - 1 EUR = fx_rate_eur_rsd RSD.
-  - If fx_rate_eur_rsd is null or missing, you MUST NOT invent an exchange rate.
-- Convert commodity revenue into the same currency as the price data (if fx_rate_eur_rsd is provided).
-- For EACH commodity, calculate:
-  - High volume estimate = Commodity Revenue / Lowest price_per_tonne for that commodity.
-  - Mid volume estimate  = Commodity Revenue / Average price_per_tonne for that commodity.
-  - Low volume estimate  = Commodity Revenue / Highest price_per_tonne for that commodity.
-- If price data is missing or FX rate is not provided (and required), set the corresponding estimates to null and explain why.
-
-Step 4: Calculate Market Share PER COMMODITY
-- For EACH commodity:
-  - Market Share (%) = (Estimated Commodity Volume / Total Commodity Production) × 100.
-  - Provide low, mid, and high market share estimates.
-- If any inputs needed for these calculations are missing, set the affected numeric values to null and document the limitation.
-
-Step 5: Calculate Weighted Overall Market Position
-- Weighted Market Share = Σ (Commodity Market Share × Commodity Revenue Percentage)
-- Example: If wheat market share = 2.5% (60% of revenue) and corn market share = 1.8% (40% of revenue):
-  - Weighted = (2.5 × 0.60) + (1.8 × 0.40) = 1.50 + 0.72 = 2.22%
-- Provide weighted low, mid, and high estimates.
+Step 7: Weighted market position
+- Weighted market share = sum of (commodity market share x revenue_pct) / sum of revenue_pct,
+  over the commodities whose market share is not null, for low, mid and high.
+- Example: wheat 2.5% (60% of revenue), corn 1.8% (40%) -> (2.5 x 60 + 1.8 x 40) / 100 = 2.22%.
 
 STRICT RULES FOR NUMBERS AND DATA
 
-Rule 1: Extract numbers exactly as written in the context.
-- Copy numerical values character by character from the source.
-- Respect scale units (thousand, million, etc.) from metadata.
-- Convert units consistently (e.g., all volumes in tonnes, prices in RSD/tonne or EUR/tonne).
-
-Rule 2: Every calculation must be transparent.
-- Base all calculations only on values provided in the context and PARAMETERS.
-- Even though you will not show all intermediate steps in the JSON, you must:
-  - Be internally consistent.
-  - Reflect the logic described in the methodology.
-- In the narrative, clearly describe:
-  - Which prices were used.
-  - Which production figures were used.
-  - Which FX rate (if any) was used.
-
-Rule 3: No external knowledge.
-- Use only data from the provided context (PARAMETERS + client financials + market analysis JSON).
-- Do not assume industry averages, typical margins, or external FX rates.
-- If data is missing, state it explicitly in limitations_and_caveats.
-
-Rule 4: Handle currency conversions carefully.
-- If client data is in EUR and market data is in RSD:
-  - Use ONLY fx_rate_eur_rsd from PARAMETERS:
-    - 1 EUR = fx_rate_eur_rsd RSD.
-- Perform calculations in the primary market currency (from PARAMETERS), then convert if needed.
-- Clearly state in the narrative:
-  - FX rate used.
-  - FX rate date (fx_rate_date).
-- If no FX rate is provided (fx_rate_eur_rsd is null) and a conversion is required:
-  - Set any FX-dependent numeric fields (e.g., estimated_volume, market_share, total_market_value) to null.
-  - Explain in limitations_and_caveats why they are null.
-
-Rule 5: Handling missing or non-computable values.
-- If a numeric value cannot be computed due to missing data:
-  - Set the numeric value to null.
-  - Do NOT put error messages or text like "Cannot calculate" in numeric fields.
-  - Instead, describe the issue in limitations_and_caveats and/or the narrative.
+Rule 1: Take market numbers exactly as written in the market analysis report.
+Rule 2: Every calculation uses only PARAMETERS and the market analysis report, and follows the
+  methodology above. Be internally consistent: tables, charts and narrative show the same values.
+Rule 3: No external knowledge: no industry averages, typical prices, margins or exchange rates.
+Rule 4: If a value cannot be computed, the numeric field is null (never text such as
+  "Cannot calculate"); explain why in limitations_and_caveats.
+Rule 5: In the narrative, state which year, prices, market volumes and exchange rate (with
+  fx_rate_date) were used for every commodity.
 
 OUTPUT FORMAT
 
-You must return a single valid JSON object with the following structure:
-
-IMPORTANT: MAXIMIZE VISUAL ELEMENTS
-- Include as many charts and tables as possible to visualize the data
-- Every numeric comparison should have a corresponding chart or table
-- The frontend will render these visualizations - make the report visually rich
-- Reference charts and tables in the narrative using {{table:id}} and {{chart:id}} syntax
+Return a single valid JSON object with the structure below.
+Include as many charts and tables as the data allows, and reference them in the narrative with
+{{table:id}} and {{chart:id}}.
 
 {
-  "analysis_id": "<UNIQUE_IDENTIFIER e.g. market_position/uuid.json>",
-  "market_analysis_id": "<REFERENCE_TO_SOURCE_MARKET_ANALYSIS e.g. market_analysis/uuid.json>",
-  "client_name": "from client financials metadata",
-  "analysis_period": "year or period analyzed, e.g. '2025 (client) vs 2025/26 (marketing year)'",
-  "currency": "primary currency used for calculations (e.g. 'RSD' or 'EUR')",
+  "client_name": "<SET BY THE SYSTEM>",
+  "analysis_period": "e.g. '2025 (client revenue and market data)'",
+  "currency": "primary_currency",
 
   "client_financials_summary": {
     "total_revenue": {
-      "value": number | null,
-      "unit": "string (e.g., 'RSD' or 'EUR')",
-      "scale_applied": "string (e.g., 'thousand' -> value already multiplied)",
+      "value": number,
+      "unit": "primary_currency",
+      "scale_applied": "none",
       "year": integer | null
     },
-    "revenue_trend": "description of YoY change if multiple years available, otherwise a short note"
+    "revenue_trend": "Only one year of revenue was provided; no trend can be derived."
   },
 
   "commodities_analyzed": [
     {
       "commodity": "wheat",
       "revenue_share_pct": 60,
-      "estimated_revenue": {
-        "value": number | null,
-        "unit": "EUR or RSD"
-      },
+      "estimated_revenue": {"value": number | null, "unit": "primary_currency"},
+      "volume_unit": "physical unit of the volume fields below, e.g. 'tonnes' or 'GWh'",
       "market_data": {
         "total_production_tonnes": number | null,
         "harvested_area_ha": number | null,
         "yield_per_ha": number | null,
         "price_data": {
           "average_price": number | null,
-          "price_unit": "RSD/tonne",
+          "price_unit": "primary_currency per volume_unit, e.g. 'RSD/tonne'",
           "price_range_low": number | null,
           "price_range_high": number | null
         },
-        "total_market_value": {
-          "value": number | null,
-          "unit": "RSD or EUR"
-        }
+        "total_market_value": {"value": number | null, "unit": "primary_currency"}
       },
       "estimated_volume": {
         "low_estimate_tonnes": number | null,
@@ -694,44 +577,39 @@ IMPORTANT: MAXIMIZE VISUAL ELEMENTS
         "mid_estimate_pct": number | null,
         "high_estimate_pct": number | null
       }
-    },
-    {
-      "commodity": "corn",
-      "revenue_share_pct": 40,
-      "...same structure as above..."
     }
   ],
 
   "weighted_market_position": {
-    "methodology": "Weighted average of individual commodity market shares based on revenue percentages",
+    "methodology": "Weighted average of the commodity market shares by revenue share",
     "weighted_market_share": {
       "low_estimate_pct": number | null,
       "mid_estimate_pct": number | null,
       "high_estimate_pct": number | null
     },
-    "calculation_basis": "e.g., (wheat_share × 0.60) + (corn_share × 0.40)"
+    "calculation_basis": "e.g. (wheat_share x 60 + corn_share x 40) / 100"
   },
 
   "market_position_analysis": {
-    "methodology": "short description of the calculation approach actually used",
-    "assumptions": ["list of key assumptions made"]
+    "methodology": "short description of the calculation actually used",
+    "assumptions": ["key assumptions, e.g. the year total_revenue refers to"]
   },
 
-  "analysis_narrative_md": "## Market Position Analysis\\n\\nFull markdown narrative with embedded chart/table references like {{table:client_financials}} and {{chart:market_share_comparison}}...",
+  "analysis_narrative_md": "## Market Position Analysis\\n\\nMarkdown narrative with references like {{table:client_financials}} and {{chart:market_share_comparison}}...",
 
   "tables": [
     {
       "id": "client_financials",
-      "title": "Client Financial Summary",
+      "title": "Client Revenue by Commodity",
       "columns": [
         {"id": "metric", "name": "Metric", "type": "string"},
         {"id": "value", "name": "Value", "type": "float"},
         {"id": "unit", "name": "Unit", "type": "string"}
       ],
       "rows": [
-        ["Total Revenue", 165901000, "EUR"],
-        ["Estimated Wheat Revenue", 99540600, "EUR"],
-        ["Estimated Corn Revenue", 66360400, "EUR"]
+        ["Total Revenue", 165901000, "RSD"],
+        ["Estimated Wheat Revenue", 99540600, "RSD"],
+        ["Estimated Corn Revenue", 66360400, "RSD"]
       ]
     },
     {
@@ -748,124 +626,62 @@ IMPORTANT: MAXIMIZE VISUAL ELEMENTS
     },
     {
       "id": "volume_estimates",
-      "title": "Estimated Trading Volumes",
+      "title": "Estimated Client Volumes",
       "columns": [
         {"id": "commodity", "name": "Commodity", "type": "string"},
-        {"id": "low_tonnes", "name": "Low Estimate (t)", "type": "float"},
-        {"id": "mid_tonnes", "name": "Mid Estimate (t)", "type": "float"},
-        {"id": "high_tonnes", "name": "High Estimate (t)", "type": "float"}
+        {"id": "low", "name": "Low Estimate", "type": "float"},
+        {"id": "mid", "name": "Mid Estimate", "type": "float"},
+        {"id": "high", "name": "High Estimate", "type": "float"},
+        {"id": "unit", "name": "Unit", "type": "string"}
       ],
       "rows": []
     },
     {
       "id": "price_summary",
-      "title": "Price Data Summary",
+      "title": "Prices Used in the Calculation",
       "columns": [
         {"id": "commodity", "name": "Commodity", "type": "string"},
-        {"id": "min_price", "name": "Min Price (RSD/t)", "type": "float"},
-        {"id": "avg_price", "name": "Avg Price (RSD/t)", "type": "float"},
-        {"id": "max_price", "name": "Max Price (RSD/t)", "type": "float"}
+        {"id": "min_price", "name": "Min Price", "type": "float"},
+        {"id": "avg_price", "name": "Avg Price", "type": "float"},
+        {"id": "max_price", "name": "Max Price", "type": "float"},
+        {"id": "unit", "name": "Unit", "type": "string"}
       ],
       "rows": []
     }
   ],
 
   "charts": [
-    {
-      "id": "revenue_split",
-      "title": "Client Revenue by Commodity",
-      "type": "pie",
-      "y_axis_unit": "<unit for values, e.g. '%', 'tonnes', 'EUR', 'RSD/tonne'>",
-      "data": [
-        {"label": "Wheat", "value": 60},
-        {"label": "Corn", "value": 40}
-      ]
-    },
-    {
-      "id": "market_share_comparison",
-      "title": "Market Share by Commodity (Mid Estimate)",
-      "type": "bar",
-      "y_axis_unit": "<unit for values, e.g. '%', 'tonnes', 'EUR', 'RSD/tonne'>",
-      "data": [
-        {"label": "Wheat", "value": 2.5},
-        {"label": "Corn", "value": 1.8}
-      ]
-    },
-    {
-      "id": "volume_range",
-      "title": "Estimated Volume Range by Commodity",
-      "type": "bar",
-      "y_axis_unit": "<unit for values, e.g. '%', 'tonnes', 'EUR', 'RSD/tonne'>",
-      "data": [
-        {"label": "Wheat Low", "value": 50000},
-        {"label": "Wheat Mid", "value": 75000},
-        {"label": "Wheat High", "value": 100000},
-        {"label": "Corn Low", "value": 30000},
-        {"label": "Corn Mid", "value": 45000},
-        {"label": "Corn High", "value": 60000}
-      ]
-    },
-    {
-      "id": "client_vs_market",
-      "title": "Client Volume vs Total Market Production",
-      "type": "bar",
-      "y_axis_unit": "<unit for values, e.g. '%', 'tonnes', 'EUR', 'RSD/tonne'>",
-      "data": [
-        {"label": "Wheat - Client (Mid)", "value": 75000},
-        {"label": "Wheat - Market Total", "value": 3000000},
-        {"label": "Corn - Client (Mid)", "value": 45000},
-        {"label": "Corn - Market Total", "value": 5000000}
-      ]
-    },
-    {
-      "id": "weighted_position",
-      "title": "Weighted Market Position Range",
-      "type": "bar",
-      "y_axis_unit": "<unit for values, e.g. '%', 'tonnes', 'EUR', 'RSD/tonne'>",
-      "data": [
-        {"label": "Low Estimate", "value": 1.5},
-        {"label": "Mid Estimate", "value": 2.2},
-        {"label": "High Estimate", "value": 3.0}
-      ]
-    }
+    {"id": "revenue_split", "title": "Client Revenue by Commodity", "type": "pie", "y_axis_unit": "%",
+     "data": [{"label": "Wheat", "value": 60}, {"label": "Corn", "value": 40}]},
+    {"id": "market_share_comparison", "title": "Market Share by Commodity (Mid Estimate)", "type": "bar", "y_axis_unit": "%",
+     "data": [{"label": "Wheat", "value": 2.5}, {"label": "Corn", "value": 1.8}]},
+    {"id": "volume_range", "title": "Estimated Volume Range by Commodity", "type": "bar", "y_axis_unit": "<volume unit>",
+     "data": [{"label": "Wheat Low", "value": 50000}, {"label": "Wheat Mid", "value": 75000}, {"label": "Wheat High", "value": 100000}]},
+    {"id": "client_vs_market", "title": "Client Volume vs Total Market", "type": "bar", "y_axis_unit": "<volume unit>",
+     "data": [{"label": "Wheat - Client (Mid)", "value": 75000}, {"label": "Wheat - Market Total", "value": 3000000}]},
+    {"id": "weighted_position", "title": "Weighted Market Position Range", "type": "bar", "y_axis_unit": "%",
+     "data": [{"label": "Low Estimate", "value": 1.5}, {"label": "Mid Estimate", "value": 2.2}, {"label": "High Estimate", "value": 3.0}]}
   ],
 
   "limitations_and_caveats": [
-    "List of data limitations",
-    "Assumptions that affect accuracy",
-    "Missing data that would improve analysis"
+    "e.g. The revenue split across commodities is an estimate entered by the analyst",
+    "Missing market data or exchange rates and the values left null because of them"
   ],
 
   "sources": [
-    {"name": "source document name", "type": "client_financials or market_analysis"}
+    {"name": "Client revenue entered by the analyst", "type": "client_input"},
+    {"name": "source document name from the market analysis", "type": "market_analysis"}
   ]
 }
 
+The *_tonnes fields keep their names for every industry: they hold the volume in volume_unit.
+
 MANDATORY CHARTS AND TABLES
-
-You MUST include ALL of the following visualizations:
-
-Tables (minimum required):
-1. client_financials - Summary of client's key financial metrics
-2. market_share_by_commodity - Market share estimates for each commodity
-3. volume_estimates - Low/mid/high volume estimates per commodity
-4. price_summary - Price data used in calculations
-
-Charts (minimum required):
-1. revenue_split (pie) - How client revenue splits across commodities
-2. market_share_comparison (bar) - Compare market share across commodities
-3. volume_range (bar) - Show low/mid/high volume estimates
-4. client_vs_market (bar) - Compare client volumes to total market
-5. weighted_position (bar) - Show the weighted market position range
-
-Additional charts to include if data permits:
-- Price trend comparison across commodities
-- Year-over-year revenue comparison (if multiple years available)
-- Market production trends from market analysis data
-
-In the narrative, reference these visualizations:
-"As shown in {{table:client_financials}}, the client's total revenue..."
-"The market share comparison ({{chart:market_share_comparison}}) illustrates..."
+- Tables: client_financials, market_share_by_commodity, volume_estimates, price_summary
+- Charts: revenue_split (pie), market_share_comparison (bar), volume_range (bar),
+  client_vs_market (bar), weighted_position (bar)
+- Put only values with the same unit into one chart.
+- Additional charts if the data permits, e.g. price or market volume trends from the market analysis.
 
 OUTPUT RULES
 - Respond with a single JSON object only.
@@ -874,6 +690,34 @@ OUTPUT RULES
 - Do NOT use trailing commas.
 - All strings must use double quotes.
 """
+
+
+def build_market_position_context(
+    total_revenue: float,
+    commodities: list[dict],
+    primary_currency: str,
+    fx_rate_eur_rsd: float | None,
+    fx_rate_date: str | None,
+    market_analysis: str,
+) -> str:
+    """User message for the market position: the analyst's inputs plus the market analysis JSON."""
+    def value(v) -> str:
+        return "null" if v is None else str(v)
+
+    commodity_lines = "\n".join(
+        f"  - {c['name']}: {c['revenue_pct']}% of revenue" for c in commodities
+    )
+    return (
+        "=== PARAMETERS ===\n"
+        f"total_revenue: {total_revenue}\n"
+        f"primary_currency: {primary_currency}\n"
+        f"commodities (with estimated revenue share):\n{commodity_lines}\n"
+        f"fx_rate_eur_rsd: {value(fx_rate_eur_rsd)}\n"
+        f"fx_rate_date: {value(fx_rate_date)}\n\n"
+        "<<<MARKET_ANALYSIS_JSON>>>\n"
+        f"{market_analysis}\n"
+        "<<<END_MARKET_ANALYSIS_JSON>>>"
+    )
 
 
 INDUSTRY_MARKET_ANALYSIS_PROMPT = """You are a senior credit risk analyst at a bank.
