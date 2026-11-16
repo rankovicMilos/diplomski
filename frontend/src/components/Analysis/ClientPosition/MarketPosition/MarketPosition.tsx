@@ -83,7 +83,7 @@ const MarketPosition = ({ marketPosition }: MarketPositionProps) => {
                       xAxis={[{
                         scaleType: 'band', data: chart.data.map(d => d.label), categoryGapRatio: 0.4, barGapRatio: 0.15, colorMap: {
                           type: 'ordinal',
-                          colors: ['#14b8a6', '#0ea5e9', '#8b5cf6', '#f59e0b']
+                          colors: ['#4F46E5', '#8B8AF5', '#0E0B3D', '#A5B4FC']
                         }
                       }]}
                       yAxis={[{ label: chart?.y_axis_unit ?? "", min: 0 }]}

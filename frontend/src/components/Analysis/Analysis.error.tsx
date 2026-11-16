@@ -11,7 +11,7 @@ const AnalysisError = () => {
 
       <div className="flex flex-col items-center justify-center gap-6 px-4">
         <div className="flex flex-col items-center gap-3 text-center">
-          <Avatar sx={{ width: 56, height: 56, bgcolor: "#d32f2f" }}  > <WarningAmberRounded sx={{ fontSize: 32, color: "#000000" }} /></Avatar>
+          <Avatar sx={{ width: 56, height: 56, bgcolor: "#B3382C" }}  > <WarningAmberRounded sx={{ fontSize: 32, color: "#ffffff" }} /></Avatar>
 
           <h1 className="text-2xl font-bold text-gray-800">
             Nešto nije u redu

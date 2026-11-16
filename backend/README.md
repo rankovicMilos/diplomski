@@ -23,14 +23,16 @@ retrieval.
 Generates the reports with Claude (Anthropic API):
 - **Market Analysis** — retrieval per report section, then generation (crops, or any industry
   configured in the scraper YAML)
-- **Market Position** — Claude reads the client's PDF together with the Market Analysis
+- **Market Position** — built from the analyst's inputs (total revenue, revenue share per
+  commodity, currency, EUR/RSD rate) together with the Market Analysis; no client documents are read
 - **Peer Analysis** — from the peer CSV, triggered when the CSV lands in `peer_data/`
 
 Also builds the local vector index (`src/retrieval/indexer.py`) and serves the read API
 (list reports, latest analysis per category, client report).
 
 ### [Trigger Upload](./trigger-upload-lambda/)
-`POST /upload`: Excel files are converted to CSV (`peer_data/`), PDFs get an upload URL.
+`POST /upload`: Excel files are converted to CSV (`peer_data/`), PDFs get an upload URL. The
+Market Position no longer needs an upload; the Excel is used for the Peer Analysis.
 
 ## Backends
 
@@ -44,7 +46,7 @@ Also builds the local vector index (`src/retrieval/indexer.py`) and serves the r
 ```
 data/
 ├── sra-thesis-raw-data/        # scraper output: raw/<industry>/<source>/...
-├── sra-thesis-client-data/     # uploads: market_position_data/pdf/, peer_data/
+├── sra-thesis-client-data/     # uploads: peer_data/ (market_position_data/pdf/ is optional)
 └── sra-thesis-output/          # reports: market_analysis/, industry_analysis/<industry>/,
                                 #          market_position/, peer_analysis/
 ```

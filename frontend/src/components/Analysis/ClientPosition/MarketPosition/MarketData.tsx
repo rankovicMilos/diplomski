@@ -146,28 +146,28 @@ const MarketData = ({ market_data }: MarketDataProps) => {
             ]}
             sx={{
               '& .MuiSlider-thumb': {
-                backgroundColor: '#1976d2',
+                backgroundColor: '#4F46E5',
                 width: 16,
                 height: 16,
                 '&:hover, &.Mui-focusVisible': {
-                  boxShadow: '0 0 0 8px rgba(25, 118, 210, 0.16)',
+                  boxShadow: '0 0 0 8px rgba(79, 70, 229, 0.16)',
                 },
               },
               '& .MuiSlider-track': {
-                backgroundColor: '#1976d2',
+                backgroundColor: '#4F46E5',
                 height: 6,
               },
               '& .MuiSlider-rail': {
-                backgroundColor: '#e0e0e0',
+                backgroundColor: '#D8D8E6',
                 height: 6,
               },
               '& .MuiSlider-mark': {
-                backgroundColor: '#bdbdbd',
+                backgroundColor: '#ABAAC4',
                 height: 12,
                 width: 2,
               },
               '&.Mui-disabled': {
-                color: '#1976d2',
+                color: '#4F46E5',
               },
             }}
           />

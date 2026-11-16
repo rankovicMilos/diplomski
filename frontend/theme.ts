@@ -4,15 +4,15 @@ const themeOptions: ThemeOptions = {
   palette: {
     mode: 'light',
     primary: {
-      main: '#fee600',
-      light: '#fff492',
-      dark: '#eacd00',
-      contrastText: '#000000',
+      main: '#4F46E5',
+      light: '#8B8AF5',
+      dark: '#3730A3',
+      contrastText: '#ffffff',
     },
     secondary: {
-      main: '#67d0ab',
-      light: '#b6ecd9',
-      dark: '#39b287',
+      main: '#4F46E5',
+      light: '#8B8AF5',
+      dark: '#3730A3',
       contrastText: '#ffffff',
     },
     error: {
@@ -28,8 +28,8 @@ const themeOptions: ThemeOptions = {
       main: '#2e7d32',
     },
     background: {
-      default: '#fafafa',
-      paper: '#ffffff',
+      default: 'transparent',
+      paper: 'rgba(255,255,255,0.6)',
     },
     grey: {
       "900": '#000000'
@@ -37,18 +37,20 @@ const themeOptions: ThemeOptions = {
   },
 
   typography: {
-    fontFamily: '"Amalia", "Arial", "Helvetica", "sans-serif"',
+    fontFamily: 'var(--font-geist-sans), "Segoe UI", Arial, sans-serif',
   },
   shape: {
-    borderRadius: 8,
+    borderRadius: 14,
   },
   components: {
     MuiButton: {
 
       styleOverrides: {
         root: {
-          borderRadius: 8,
-          padding: '8px 16px',
+          borderRadius: 999,
+          padding: '8px 22px',
+          textTransform: 'none',
+          fontWeight: 600,
         },
       },
       defaultProps: {
@@ -70,8 +72,14 @@ const themeOptions: ThemeOptions = {
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          boxShadow: '0 8px 32px rgba(31,38,135,0.10)',
+          backdropFilter: 'blur(20px) saturate(180%)',
         },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: { backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: 14 },
       },
     },
     MuiDivider: {

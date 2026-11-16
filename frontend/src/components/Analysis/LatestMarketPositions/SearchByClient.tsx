@@ -14,7 +14,7 @@ const SearchByClient = () => {
 
   return (
     <form onSubmit={onSubmit}>
-      <TextField value={clientNameState} onChange={e => setClientNameState(e.target.value)} size="small" label="Naziv klijenta" />
+      <TextField value={clientNameState} onChange={e => setClientNameState(e.target.value)} size="small" label="Naziv klijenta" sx={{ minWidth: 280, "& .MuiOutlinedInput-root": { borderRadius: 999, backgroundColor: "#fff" } }} />
     </form>
   )
 }

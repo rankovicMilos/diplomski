@@ -4,9 +4,9 @@ A Next.js application for generating and viewing market position reports and pee
 
 ## Features
 
-- **File Upload**: Upload client financial data (PDF/Excel) for analysis
-- **Market Analysis**: Generate sector-based market position reports with commodity breakdown
-- **Peer Comparison**: Analyze client performance against industry peers
+- **New analysis form**: Enter company name, total revenue, currency, EUR/RSD rate and date, and the revenue share per commodity (crops, or electricity sources on the Electricity form); the Market Position is generated from these inputs
+- **Market Analysis**: View the latest industry market analysis
+- **Peer Comparison**: View client performance against industry peers (generated from an uploaded peer Excel)
 - **Data Visualization**: Interactive charts and tables for financial metrics
 - **Document Export**: Export analysis reports to DOCX format
 - **Search & Filter**: Find analyses by client name or category
@@ -18,7 +18,7 @@ A Next.js application for generating and viewing market position reports and pee
 - **UI**: Material-UI + Tailwind CSS
 - **State**: React Query (TanStack Query)
 - **Charts**: MUI X Charts
-- **Backend**: AWS Lambda API (API Gateway)
+- **Backend**: Orchestrator and upload APIs (local FastAPI servers, or API Gateway on AWS)
 
 ## Getting Started
 
@@ -89,8 +89,8 @@ A production build (`output: 'export'`) calls `NEXT_PUBLIC_API_URL` directly.
 - `GET /analyses` - List all market position analyses
 - `GET /analyses/:category` - Get analysis by category
 - `GET /analyses/client/:id` - Get client report (market position + peer analysis)
-- `POST /analyses` - Generate new market position report
-- `POST /upload` - Upload client data files
+- `POST /analyses` - Generate a market position report (`analysis_type: market_position` with `total_revenue`, `commodities`, `primary_currency`, `fx_rate_eur_rsd`, `fx_rate_date`, `nace_code`)
+- `POST /upload` - Upload the peer Excel (converted to CSV, triggers the peer analysis)
 - `PUT /local-upload/<key>` - Local stand-in for the S3 presigned upload URL
 
 ## Key Dependencies

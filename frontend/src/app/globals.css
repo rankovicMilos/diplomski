@@ -4,35 +4,71 @@
 @plugin 'tailwind-scrollbar';
 
 :root {
-  --background: #ffffff;
-  --foreground: #f4f4f4;
-  --primary: #fee600;
-  --secondary: #037080;
+  --background: #eef0fb;
+  --foreground: #0f1535;
+  --primary: #4f46e5;
+  --secondary: #4f46e5;
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.7);
 }
 
 @theme inline {
-  /* --color-background: var(--background); */
-  /* --color-foreground: var(--foreground); */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #f4f4f4;
-    --foreground: #ededed;
+body {
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  scrollbar-gutter: stable;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'tnum' 1;
+  background-color: var(--background);
+  /* soft colour blobs for the glass to refract */
+  background-image:
+    radial-gradient(60rem 40rem at 5% -10%, rgba(99, 102, 241, 0.22), transparent 60%),
+    radial-gradient(50rem 36rem at 100% 0%, rgba(56, 189, 248, 0.18), transparent 60%),
+    radial-gradient(48rem 36rem at 60% 110%, rgba(167, 139, 250, 0.18), transparent 60%);
+  background-attachment: fixed;
+}
+
+/* Liquid glass surface */
+@layer components {
+  .glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 0.7);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .glass-hover:hover {
+    background: rgba(255, 255, 255, 0.75);
+    border-color: rgba(79, 70, 229, 0.35);
   }
 }
 
-body {
-  background: var(--background);
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-  scrollbar-gutter: stable;
+/* fall back to a near-opaque surface where blur is unsupported */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass { background: rgba(255, 255, 255, 0.92); }
 }
 
 a {
   &:hover {
     text-decoration: underline;
-    color: var(--secondary)
+    color: var(--primary);
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

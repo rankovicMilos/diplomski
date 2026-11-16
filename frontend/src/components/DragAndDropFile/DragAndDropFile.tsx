@@ -112,8 +112,8 @@ const DragAndDropFile = ({ onSelectFile }: DragAndDropFileProps) => {
         role="button"
         tabIndex={0}
         aria-label="Otpremanje datoteke: prevucite i otpustite ili kliknite za izbor"
-        className={cn("rounded-xs flex flex-col justify-center items-center py-16 border-1 border-dashed bg-yellow-10 hover:bg-yellow-20 border-yellow-100 cursor-pointer", {
-          "bg-yellow-20": isDragging
+        className={cn("rounded-md flex flex-col justify-center items-center py-16 border-2 border-dashed bg-white-100/40 hover:bg-white-100/70 border-teal-60 transition-colors duration-200 cursor-pointer", {
+          "bg-teal-20 border-teal-100": isDragging
         })}
         onDragEnter={handleDragIn}
         onDragLeave={handleDragOut}

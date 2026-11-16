@@ -34,10 +34,10 @@ const ExpandableListItem = ({ listItem, onItemSelect, searchQuery, selectedItem,
   }
 
   return (
-    <div className={cn("flex flex-col pl-3 py-0.5 text-charcoal-80", className)}>
+    <div className={cn("flex flex-col pl-3 py-0.5 text-charcoal-80 text-xs", className)}>
       <div className="flex justify-between items-center">
 
-        <button className={cn("text-start", selectedItem === listItem.label && "font-bold text-teal-100")} onClick={handleItemSelect}>
+        <button className={cn("text-start rounded-xs px-2 py-1 border-l-2 border-transparent transition-colors duration-200 hover:bg-teal-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-100", selectedItem === listItem.label && "font-bold text-teal-100 border-teal-100 bg-teal-10")} onClick={handleItemSelect}>
           <HighlightedText text={listItem.label} highlightText={searchQuery} />
         </button>
         {listItem.items.length ? (

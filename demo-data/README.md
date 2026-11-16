@@ -1,19 +1,22 @@
 # Demo data
 
-A Client Report needs two files per client, uploaded in the "New analysis" form:
+A Client Report needs no client file: the Market Position is generated from the inputs in the
+"New analysis" form (company name, total revenue, currency, EUR/RSD rate and date, revenue share
+per commodity). Only the Peer Analysis needs a file:
 
-1. **Client financial statements (PDF)** — read directly by Claude for the Market Position.
+1. **Client figures** — take total revenue and the revenue split from the client's public
+   financial statements (see below) and type them into the form.
 2. **Peer Excel** — the client and its Peer group side by side, for the Peer Analysis.
 
 Use public data only. Put the files you download or prepare in `demo-data/private/`
 (git-ignored) and note every source in the table at the bottom.
 
-## 1. Client financial statements
+## 1. Client figures
 
 Serbian companies' annual financial statements are public in the **APR register of financial
 statements** (Agencija za privredne registre → Registar finansijskih izveštaja → Pretraga
 finansijskih izveštaja): search by company name or registration number (matični broj) and
-download the statement for the last completed year as PDF.
+read the figures from the statement for the last completed year.
 
 Pick a client whose NACE category matches a demo industry:
 
@@ -50,8 +53,8 @@ Rules:
   published. **Leave cells empty where no official total exists**; the report then says
   "Data not available" instead of inventing a share. Do not use the sum of the peers.
 
-Upload the sheet in the same form as the PDF. The app names it after the analysis, so the
-Peer Analysis is linked to the Market Position automatically.
+Upload the sheet through `POST /upload`. It must be named after the analysis id
+(`<analysis_id>.xlsx`), so the Peer Analysis is linked to the Market Position automatically.
 
 ## Sources used
 

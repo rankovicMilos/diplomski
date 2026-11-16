@@ -6,7 +6,8 @@ AWS Lambda function for handling file uploads with Excel-to-CSV conversion and P
 
 API Gateway-triggered Lambda that processes file uploads:
 - **Excel files** (.xlsx, .xls): Converts to CSV and stores in S3
-- **PDF files**: Generates presigned URLs for direct S3 upload
+- **PDF files**: Generates presigned URLs for direct S3 upload (optional; the Market Position
+  no longer reads client PDFs)
 
 ## Architecture
 

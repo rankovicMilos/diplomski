@@ -26,7 +26,8 @@ const config: Config = {
 			"medium": "0px 4px 10px 0px rgba(0, 0, 0, 0.24)",
 			"high": "0px 4px 30px 0px rgba(0, 0, 0, 0.15)",
 			"high-lighter": "0px 4px 48px 0px rgba(0, 0, 0, 0.07)",
-			"light": "0px 2px 6px 0px rgba(0, 0, 0, 0.08)",
+			"light": "0px 2px 6px 0px rgba(15, 21, 53, 0.08)",
+			"glass": "0 8px 32px 0 rgba(31, 38, 135, 0.10), inset 0 1px 0 0 rgba(255,255,255,0.7)",
 			"none": "none"
 		},
 		colors: {
@@ -45,8 +46,8 @@ const config: Config = {
 				10: "#FFFDF2"
 			},
 			charcoal: {
-				100: "#2F2F2F",
-				90: "#444444",
+				100: "#0F1535",
+				90: "#2A3052",
 				80: "#585858",
 				75: "#666666",
 				70: "#6D6D6D",
@@ -63,18 +64,18 @@ const config: Config = {
 				"80T": "#ffffffcc"
 			},
 			teal: {
-				100: "#62BAB7",
-				90: "#72C1BE",
-				80: "#81C8C5",
-				75: "#89CBC9",
-				70: "#91CFCD",
-				60: "#A1D6D4",
-				50: "#B0DCDB",
-				40: "#C0E3E2",
-				30: "#D0EAE9",
-				25: "#D7EEED",
-				20: "#E0F1F1",
-				10: "#EFF8F8"
+				100: "#4F46E5",
+				90: "#5F57EA",
+				80: "#6F68EE",
+				75: "#7771F0",
+				70: "#7F7AF1",
+				60: "#938FF4",
+				50: "#A8A5F6",
+				40: "#C0BEF9",
+				30: "#D4D3FB",
+				25: "#DDDCFC",
+				20: "#E6E5FD",
+				10: "#F1F0FE"
 			},
 			steel: {
 				100: "#CFD1D4",

@@ -1,8 +1,9 @@
 # Sector Risk Analysis
 
 AI-assisted sector and credit risk analysis: the system collects public market data for an
-industry, indexes it, and uses Claude to write a **Market Analysis** of the industry and,
-from a client's financial statements, a **Market Position** report and a **Peer Analysis**.
+industry, indexes it, and uses Claude to write a **Market Analysis** of the industry, a
+**Market Position** report for a client (from the analyst's form inputs) and a **Peer Analysis**
+(from a peer Excel sheet).
 Domain terms are defined in [CONTEXT.md](./CONTEXT.md).
 
 Bachelor thesis project. _Author, faculty and mentor: to be added._
@@ -23,7 +24,7 @@ the demonstrated ones; 15 are configured).
  │ Next.js  │────────▶│ Orchestrator │───────────────────────────────▶│ Claude (API) │
  │ frontend │◀────────│ (reports)    │◀──────────── JSON report ──────└──────────────┘
  └──────────┘         └──────────────┘
-      │ upload PDF/Excel      ▲ peer CSV triggers peer analysis
+      │ peer Excel            ▲ peer CSV triggers peer analysis
       ▼                       │
  ┌──────────────┐  CSV  ─────┘
  │ Upload       │
@@ -47,11 +48,11 @@ this project runs the **same handlers locally**, with switchable backends:
 backend/
 ├── scraper-lambda/          # config-driven scrapers; sources in src/config/sources/<industry>.yaml
 ├── orchestrator-lambda/     # report generation, retrieval (src/retrieval), local API server
-└── trigger-upload-lambda/   # client file uploads (PDF; Excel -> CSV), local upload server
+└── trigger-upload-lambda/   # file uploads (Excel -> CSV, PDF upload URL), local upload server
 frontend/                    # Next.js 16 web app
 infrastructure/              # Terraform for the AWS deployment (reference only)
 scripts/                     # dev.sh (run everything), demo.sh (collect data + market analysis)
-demo-data/                   # how to prepare client and peer files for a demo
+demo-data/                   # how to prepare the peer Excel for a demo
 ```
 
 ## Running locally
@@ -73,8 +74,10 @@ scripts/demo.sh cereals           # scrape -> index -> crop market analysis
 ```
 
 The first indexing run downloads the embedding model (~2 GB). Then open the app, choose an
-industry, and create a client report by uploading the client's financial statements (PDF)
-and a peer Excel file (see [demo-data/](./demo-data/README.md)).
+industry, and create a client report in the "New analysis" form: company name, total revenue,
+currency, EUR/RSD rate and date, and the revenue share per commodity. The Market Position is
+generated from these inputs and the latest Market Analysis of the client's industry. A Peer
+Analysis is generated when a peer Excel is uploaded (see [demo-data/](./demo-data/README.md)).
 
 ## Data sources
 
